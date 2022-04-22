@@ -1,0 +1,15 @@
+
+spring:
+  mongodb:
+    uri: ${mongodb.uri}
+    database: banking_demo
+#  mongodb2:
+#    uri: ${mongodb2.uri}
+#    database: test_db
+
+
+
+logging:
+  level:
+    org:
+      springframework: DEBUG

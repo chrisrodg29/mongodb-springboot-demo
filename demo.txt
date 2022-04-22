@@ -1,0 +1,25 @@
+Demonstration:
+Show the requests in Postman.
+    * Make Caveat about FakerService
+Show MongoDBConfiguration
+    * Explain Client url and settings
+Show POJOs for Account and Customer.
+Show AbstractDao
+Split to AccountsService and AccountsDao
+* Explain codec
+* Show 5 Account CRUD operations
+    (create, readAll, readByField, update, delete)
+
+
+
+
+
+
+
+To-do:
+Need a validator call
+
+Email to work PC
+Convert to ADS Initializer project
+Map out demo plan
+Email Christine with expected completion date
