@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.mongodb_spring_boot_demo.service.AccountsService.*;
-import static com.example.mongodb_spring_boot_demo.service.MongoExceptionHelper.SUCCESS;
+import static com.example.mongodb_spring_boot_demo.util.MongoExceptionHelper.SUCCESS;
 import static com.mongodb.assertions.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;

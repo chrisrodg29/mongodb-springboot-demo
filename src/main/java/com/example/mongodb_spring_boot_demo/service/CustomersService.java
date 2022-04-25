@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.mongodb_spring_boot_demo.service.MongoExceptionHelper.*;
+import static com.example.mongodb_spring_boot_demo.util.MongoExceptionHelper.*;
 
 @Service
 public class CustomersService {
@@ -106,10 +106,14 @@ public class CustomersService {
 
     public GenericWriteResponse linkAccountToCustomer(LinkAccountToCustomerV1Request request) {
         GenericReadResponse<Account> readResponse = safeRead(
-                () -> accountsDao.getAccountByAccountNumber(request.getAccountNumber()),
-                NO_ACCOUNT_FOUND_MSG
+                () -> accountsDao.getAccountByAccountNumber(request.getAccountNumber())
         );
-        if (readResponse.getData() == null) {
+        if (readResponse.getException() != null) {
+            return new GenericWriteResponse(
+                    GENERIC_WRITE_ERROR,
+                    readResponse.getException()
+            );
+        } else if (readResponse.getData() == null) {
             return new GenericWriteResponse(NO_ACCOUNT_FOUND_MSG);
         }
         return safeWrite(() -> {

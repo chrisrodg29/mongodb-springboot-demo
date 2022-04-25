@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.mongodb_spring_boot_demo.service.MongoExceptionHelper.*;
+import static com.example.mongodb_spring_boot_demo.util.MongoExceptionHelper.*;
 
 @Service
 @ConditionalOnProperty(value = "spring.mongodb2.uri")

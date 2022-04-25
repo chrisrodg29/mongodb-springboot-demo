@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.mongodb_spring_boot_demo.service.MongoExceptionHelper.*;
+import static com.example.mongodb_spring_boot_demo.util.MongoExceptionHelper.*;
 
 @Service
 public class SpringDataAccountsService {

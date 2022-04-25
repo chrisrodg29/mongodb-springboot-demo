@@ -3,10 +3,12 @@ package com.example.mongodb_spring_boot_demo.service;
 import com.example.mongodb_spring_boot_demo.api.GenericReadResponse;
 import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
 import com.example.mongodb_spring_boot_demo.api.customers.LinkAccountToCustomerV1Request;
+import com.example.mongodb_spring_boot_demo.api.customers.RemoveAccountFromCustomerV1Request;
 import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsDao;
 import com.example.mongodb_spring_boot_demo.dao.customers.CustomersDao;
 import com.example.mongodb_spring_boot_demo.model.accounts.Account;
 import com.example.mongodb_spring_boot_demo.model.customers.Customer;
+import com.mongodb.MongoException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.result.UpdateResult;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.mongodb_spring_boot_demo.service.CustomersService.*;
-import static com.example.mongodb_spring_boot_demo.service.MongoExceptionHelper.SUCCESS;
+import static com.example.mongodb_spring_boot_demo.util.MongoExceptionHelper.GENERIC_WRITE_ERROR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -55,35 +56,14 @@ class CustomersServiceTest {
     }
 
     @Test
-    void testGetCustomerById_NullResponse() {
-        GenericReadResponse<Customer> response = customersService.getCustomerById(0);
-        assertEquals(NO_CUSTOMER_FOUND_MSG, response.getOperationSuccessStatus());
-        assertNull(response.getData());
-    }
-
-    @Test
-    void testGetCustomerById_Success() {
+    void testGetCustomerById() {
         int customerId = 1;
         Customer expectedCustomer = new Customer();
         when(customersDao.getCustomerById(customerId)).thenReturn(expectedCustomer);
 
         GenericReadResponse<Customer> response = customersService.getCustomerById(customerId);
 
-        assertEquals(SUCCESS, response.getOperationSuccessStatus());
         assertEquals(expectedCustomer, response.getData());
-    }
-
-    @Test
-    void testGetCustomersByAccountNumber_NoCustomers() {
-        int accountNumber = 1;
-        List<Customer> customerList = new ArrayList<>();
-        when(customersDao.getCustomersByAccountNumber(accountNumber)).thenReturn(customerList);
-
-        GenericReadResponse<List<Customer>> response =
-                customersService.getCustomersByAccountNumber(accountNumber);
-
-        assertEquals(NO_ACCOUNT_NUMBER_MATCH_MSG, response.getOperationSuccessStatus());
-        assertEquals(0, response.getData().size());
     }
 
     @Test
@@ -95,7 +75,6 @@ class CustomersServiceTest {
         GenericReadResponse<List<Customer>> response =
                 customersService.getCustomersByAccountNumber(accountNumber);
 
-        assertEquals(SUCCESS, response.getOperationSuccessStatus());
         assertEquals(customerList, response.getData());
     }
 
@@ -115,7 +94,7 @@ class CustomersServiceTest {
     }
 
     @Test
-    void testInsertTenCustomers_AccountInsertFailure() {
+    void testInsertTenCustomers_ExceptionOnAccountInsert() {
         List<Account> accountList = stubFakerServiceGetNewAccounts();
         MongoWriteException e = mock(MongoWriteException.class);
         when(accountsDao.insertAccounts(accountList)).thenThrow(e);
@@ -126,6 +105,19 @@ class CustomersServiceTest {
                 ERROR_INSERTING_ACCOUNTS_MSG,
                 response.getResponseText()
         );
+        assertEquals(e, response.getException());
+    }
+
+    @Test
+    void testInsertTenCustomers_ExceptionOnCustomerInsert() {
+        stubFakerServiceGetNewAccounts();
+        stubGetNewCustomer();
+        MongoWriteException e = mock(MongoWriteException.class);
+        doThrow(e).when(customersDao).insertCustomers(any());
+
+        GenericWriteResponse response = customersService.insertTenCustomers();
+
+        assertEquals(ERROR_INSERTING_CUSTOMERS_MSG, response.getResponseText());
         assertEquals(e, response.getException());
     }
 
@@ -146,19 +138,28 @@ class CustomersServiceTest {
     }
 
     @Test
-    void testInsertTenCustomers_Exception() {
-        stubFakerServiceGetNewAccounts();
-        stubGetNewCustomer();
-        MongoWriteException e = mock(MongoWriteException.class);
-        doThrow(e).when(customersDao).insertCustomers(any());
+    void testReplaceCustomer_NoCustomerMatchFound() {
+        Customer customer = new Customer();
+        UpdateResult result = mock(UpdateResult.class);
+        when(customersDao.replaceCustomer(customer)).thenReturn(result);
+        when(result.getMatchedCount()).thenReturn(0L);
 
-        GenericWriteResponse response = customersService.insertTenCustomers();
+        GenericWriteResponse response = customersService.replaceCustomer(customer);
 
-        assertEquals(ERROR_INSERTING_CUSTOMERS_MSG, response.getResponseText());
-        assertEquals(e, response.getException());
+        assertEquals(NO_CUSTOMER_FOUND_MSG, response.getResponseText());
     }
 
-    // skipped replaceCustomer method
+    @Test
+    void testReplaceCustomer_MatchFound() {
+        Customer customer = new Customer();
+        UpdateResult result = mock(UpdateResult.class);
+        when(customersDao.replaceCustomer(customer)).thenReturn(result);
+        when(result.getMatchedCount()).thenReturn(1L);
+
+        GenericWriteResponse response = customersService.replaceCustomer(customer);
+
+        assertEquals(CUSTOMER_UPDATED_MSG, response.getResponseText());
+    }
 
     @Test
     void testLinkAccountToCustomer_NoAccountFound() {
@@ -171,6 +172,21 @@ class CustomersServiceTest {
         GenericWriteResponse response = customersService.linkAccountToCustomer(request);
 
         assertEquals(NO_ACCOUNT_FOUND_MSG, response.getResponseText());
+    }
+
+    @Test
+    void testLinkAccountToCustomer_ExceptionOnAccountRead() {
+        LinkAccountToCustomerV1Request request = new LinkAccountToCustomerV1Request();
+        request.setCustomerId(1);
+        request.setAccountNumber(2);
+        MongoException e = mock(MongoException.class);
+        when(accountsDao.getAccountByAccountNumber(request.getAccountNumber()))
+                .thenThrow(e);
+
+        GenericWriteResponse response = customersService.linkAccountToCustomer(request);
+
+        assertEquals(GENERIC_WRITE_ERROR, response.getResponseText());
+        assertEquals(e, response.getException());
     }
 
     @Test
@@ -208,7 +224,7 @@ class CustomersServiceTest {
     }
 
     @Test
-    void testLinkAccountToCustomer_Exception() {
+    void testLinkAccountToCustomer_ExceptionOnCustomerUpdate() {
         LinkAccountToCustomerV1Request request = new LinkAccountToCustomerV1Request();
         request.setCustomerId(1);
         request.setAccountNumber(2);
@@ -221,6 +237,62 @@ class CustomersServiceTest {
 
         assertEquals(ERROR_LINKING_ACCOUNT_MSG, response.getResponseText());
         assertEquals(e, response.getException());
+    }
+
+    @Test
+    void testRemoveAccountFromCustomer_NoMatchedCustomer() {
+        RemoveAccountFromCustomerV1Request request = new RemoveAccountFromCustomerV1Request();
+        request.setCustomerId(1);
+        request.setAccountNumber(2);
+        UpdateResult result = mock(UpdateResult.class);
+        when(customersDao.removeAccountFromCustomer(
+                request.getCustomerId(),
+                request.getAccountNumber()
+        )).thenReturn(result);
+
+        when(result.getMatchedCount()).thenReturn(0L);
+
+        GenericWriteResponse response = customersService.removeAccountFromCustomer(request);
+
+        assertEquals(NO_CUSTOMER_FOUND_MSG, response.getResponseText());
+    }
+
+    @Test
+    void testRemoveAccountFromCustomer_NoLinkedAccount() {
+        RemoveAccountFromCustomerV1Request request = new RemoveAccountFromCustomerV1Request();
+        request.setCustomerId(1);
+        request.setAccountNumber(2);
+        UpdateResult result = mock(UpdateResult.class);
+        when(customersDao.removeAccountFromCustomer(
+                request.getCustomerId(),
+                request.getAccountNumber()
+        )).thenReturn(result);
+
+        when(result.getMatchedCount()).thenReturn(1L);
+        when(result.getModifiedCount()).thenReturn(0L);
+
+        GenericWriteResponse response = customersService.removeAccountFromCustomer(request);
+
+        assertEquals(ACCOUNT_NOT_LINKED_MSG, response.getResponseText());
+    }
+
+    @Test
+    void testRemoveAccountFromCustomer_Success() {
+        RemoveAccountFromCustomerV1Request request = new RemoveAccountFromCustomerV1Request();
+        request.setCustomerId(1);
+        request.setAccountNumber(2);
+        UpdateResult result = mock(UpdateResult.class);
+        when(customersDao.removeAccountFromCustomer(
+                request.getCustomerId(),
+                request.getAccountNumber()
+        )).thenReturn(result);
+
+        when(result.getMatchedCount()).thenReturn(1L);
+        when(result.getModifiedCount()).thenReturn(1L);
+
+        GenericWriteResponse response = customersService.removeAccountFromCustomer(request);
+
+        assertEquals(ACCOUNT_REMOVED_FROM_ONE_MSG, response.getResponseText());
     }
 
 }

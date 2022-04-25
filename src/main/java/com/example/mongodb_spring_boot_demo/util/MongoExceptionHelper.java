@@ -1,4 +1,4 @@
-package com.example.mongodb_spring_boot_demo.service;
+package com.example.mongodb_spring_boot_demo.util;
 
 import com.example.mongodb_spring_boot_demo.api.GenericReadResponse;
 import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class MongoExceptionHelper {
+
     private MongoExceptionHelper() {}
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoExceptionHelper.class);
