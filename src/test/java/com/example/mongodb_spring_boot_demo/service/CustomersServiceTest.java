@@ -1,8 +1,7 @@
 package com.example.mongodb_spring_boot_demo.service;
 
+import com.example.mongodb_spring_boot_demo.api.GenericReadResponse;
 import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
-import com.example.mongodb_spring_boot_demo.api.customers.GetCustomerByIdV1Response;
-import com.example.mongodb_spring_boot_demo.api.customers.GetCustomersByAccountNumberV1Response;
 import com.example.mongodb_spring_boot_demo.api.customers.LinkAccountToCustomerV1Request;
 import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsDao;
 import com.example.mongodb_spring_boot_demo.dao.customers.CustomersDao;
@@ -21,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.mongodb_spring_boot_demo.service.CustomersService.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.example.mongodb_spring_boot_demo.service.MongoExceptionHelper.SUCCESS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -49,15 +50,15 @@ class CustomersServiceTest {
     void testGetAllCustomers() {
         ArrayList<Customer> expected = new ArrayList<>();
         when(customersDao.getAllCustomers()).thenReturn(expected);
-        ArrayList<Customer> actual = customersService.getAllCustomers();
-        assertEquals(expected, actual);
+        GenericReadResponse<List<Customer>> actual = customersService.getAllCustomers();
+        assertEquals(expected, actual.getData());
     }
 
     @Test
     void testGetCustomerById_NullResponse() {
-        GetCustomerByIdV1Response response = customersService.getCustomerById(0);
+        GenericReadResponse<Customer> response = customersService.getCustomerById(0);
         assertEquals(NO_CUSTOMER_FOUND_MSG, response.getOperationSuccessStatus());
-        assertNull(response.getCustomer());
+        assertNull(response.getData());
     }
 
     @Test
@@ -66,10 +67,10 @@ class CustomersServiceTest {
         Customer expectedCustomer = new Customer();
         when(customersDao.getCustomerById(customerId)).thenReturn(expectedCustomer);
 
-        GetCustomerByIdV1Response response = customersService.getCustomerById(customerId);
+        GenericReadResponse<Customer> response = customersService.getCustomerById(customerId);
 
         assertEquals(SUCCESS, response.getOperationSuccessStatus());
-        assertEquals(expectedCustomer, response.getCustomer());
+        assertEquals(expectedCustomer, response.getData());
     }
 
     @Test
@@ -78,10 +79,11 @@ class CustomersServiceTest {
         List<Customer> customerList = new ArrayList<>();
         when(customersDao.getCustomersByAccountNumber(accountNumber)).thenReturn(customerList);
 
-        GetCustomersByAccountNumberV1Response response = customersService.getCustomersByAccountNumber(accountNumber);
+        GenericReadResponse<List<Customer>> response =
+                customersService.getCustomersByAccountNumber(accountNumber);
 
         assertEquals(NO_ACCOUNT_NUMBER_MATCH_MSG, response.getOperationSuccessStatus());
-        assertNull(response.getCustomerList());
+        assertEquals(0, response.getData().size());
     }
 
     @Test
@@ -90,10 +92,11 @@ class CustomersServiceTest {
         List<Customer> customerList = List.of(new Customer());
         when(customersDao.getCustomersByAccountNumber(accountNumber)).thenReturn(customerList);
 
-        GetCustomersByAccountNumberV1Response response = customersService.getCustomersByAccountNumber(accountNumber);
+        GenericReadResponse<List<Customer>> response =
+                customersService.getCustomersByAccountNumber(accountNumber);
 
         assertEquals(SUCCESS, response.getOperationSuccessStatus());
-        assertEquals(customerList, response.getCustomerList());
+        assertEquals(customerList, response.getData());
     }
 
     private List<Account> stubFakerServiceGetNewAccounts() {
@@ -108,7 +111,7 @@ class CustomersServiceTest {
     }
 
     private void stubGetNewCustomer() {
-        when(fakerService.getNewCustomer(any(Account.class))).thenReturn(new Customer());
+        when(fakerService.getNewCustomers(any())).thenReturn(new ArrayList<>());
     }
 
     @Test
@@ -133,11 +136,8 @@ class CustomersServiceTest {
 
         GenericWriteResponse response = customersService.insertTenCustomers();
 
-        for (Account account: accountList) {
-            verify(fakerService).getNewCustomer(account);
-        }
+        verify(fakerService).getNewCustomers(accountList);
         verify(customersDao).insertCustomers(customerListCaptor.capture());
-        assertEquals(10, customerListCaptor.getValue().size());
 
         assertEquals(
                 NEW_CUSTOMERS_INSERTED_MSG,

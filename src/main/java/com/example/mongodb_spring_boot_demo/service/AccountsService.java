@@ -1,7 +1,9 @@
 package com.example.mongodb_spring_boot_demo.service;
 
+import com.example.mongodb_spring_boot_demo.api.GenericReadResponse;
 import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
-import com.example.mongodb_spring_boot_demo.api.accounts.*;
+import com.example.mongodb_spring_boot_demo.api.accounts.GetTopKLargestAccountsV1Request;
+import com.example.mongodb_spring_boot_demo.api.accounts.UpdateAccountBalanceV1Request;
 import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsDao;
 import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsSummaryDao;
 import com.example.mongodb_spring_boot_demo.dao.customers.CustomersDao;
@@ -19,13 +21,12 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+
+import static com.example.mongodb_spring_boot_demo.service.MongoExceptionHelper.*;
 
 @Service
 public class AccountsService {
 
-    static final String SUCCESS = "success";
-    static final String GENERIC_RETRIEVAL_ERROR = "An error occurred while retrieving data";
     static final String ACCOUNT_NOT_FOUND_MSG = "No account with that number was found";
     static final String NEW_ACCOUNTS_INSERTED_MSG = "New Accounts inserted";
     static final String ERROR_INSERTING_ACCOUNTS_MSG = "Error inserting accounts";
@@ -54,149 +55,100 @@ public class AccountsService {
     }
 
     public GenericWriteResponse insertTenAccounts() {
-        try {
+        return safeWrite(() -> {
             List<Account> accountList = fakerService.getNewAccounts(10);
             accountsDao.insertAccounts(accountList);
-            return new GenericWriteResponse(NEW_ACCOUNTS_INSERTED_MSG);
-        } catch (MongoException e) {
-            String errorMessage = ERROR_INSERTING_ACCOUNTS_MSG;
-            LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
-        }
+            return NEW_ACCOUNTS_INSERTED_MSG;
+        }, ERROR_INSERTING_ACCOUNTS_MSG);
     }
 
-    private GetAccountListResponse tryGetAccountListOperation(Supplier<List<Account>> operation) {
-        try {
-            return new GetAccountListResponse(
-                    SUCCESS,
-                    operation.get()
-            );
-        } catch (MongoException e) {
-            LOGGER.error(GENERIC_RETRIEVAL_ERROR, e);
-            return new GetAccountListResponse(GENERIC_RETRIEVAL_ERROR, null);
-        }
+    public GenericReadResponse<List<Account>> getAllAccounts() {
+        return safeRead(accountsDao::getAllAccounts);
     }
 
-    public GetAccountListResponse getAllAccounts() {
-        try {
-            return new GetAccountListResponse(
-                    SUCCESS,
-                    accountsDao.getAllAccounts()
-            );
-        } catch (MongoException e) {
-            LOGGER.error(GENERIC_RETRIEVAL_ERROR, e);
-            return new GetAccountListResponse(GENERIC_RETRIEVAL_ERROR, null);
-        }
-    }
-
-    public GetAccountResponse getAccountByNumber(int accountNumber) {
-        Account account = accountsDao.getAccountByAccountNumber(accountNumber);
-        if (account == null) {
-            return new GetAccountResponse(
-                    ACCOUNT_NOT_FOUND_MSG,
-                    null
-            );
-        } else {
-            return new GetAccountResponse(
-                    SUCCESS,
-                    account
-            );
-        }
+    public GenericReadResponse<Account> getAccountByNumber(int accountNumber) {
+        return safeRead(
+                () -> accountsDao.getAccountByAccountNumber(accountNumber),
+                ACCOUNT_NOT_FOUND_MSG
+        );
     }
 
     public GenericWriteResponse updateAccountBalanceV1(UpdateAccountBalanceV1Request request) {
-        try {
-            String responseText;
+        return safeWrite(() -> {
             UpdateResult result = accountsDao.updateBalanceByAccountNumber(
                     request.getAccountNumber(),
                     request.getBalance()
             );
             if (result.getMatchedCount() == 0) {
-                responseText = ACCOUNT_NOT_FOUND_MSG;
+                return ACCOUNT_NOT_FOUND_MSG;
             } else {
-                responseText = ACCOUNT_BALANCE_UPDATED_MSG;
+                return ACCOUNT_BALANCE_UPDATED_MSG;
             }
-            return new GenericWriteResponse(responseText);
-        } catch (MongoException e) {
-            String errorMessage = ERROR_UPDATING_ACCOUNT_MSG;
-            LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
-        }
+        }, ERROR_UPDATING_ACCOUNT_MSG);
     }
 
     public GenericWriteResponse deleteAccountByNumber(int accountNumber) {
-        String responseMessage;
-        try {
+        return safeWrite(() -> {
             boolean deletedInAccounts = accountsDao.deleteAccountByAccountNumber(accountNumber);
             if (!deletedInAccounts) {
-                responseMessage = ACCOUNT_NOT_FOUND_MSG;
+                return ACCOUNT_NOT_FOUND_MSG;
             } else {
-                responseMessage = ACCOUNT_DELETED_MSG;
                 boolean deletedInCustomers =
                         customersDao.removeAccountFromAllCustomers(accountNumber);
-                if (!deletedInCustomers) {
-                    responseMessage += NO_MATCHING_CUSTOMER_MSG;
+                if (deletedInCustomers) {
+                    return ACCOUNT_DELETED_MSG;
+                } else {
+                    return ACCOUNT_DELETED_MSG + NO_MATCHING_CUSTOMER_MSG;
                 }
             }
-            return new GenericWriteResponse(responseMessage);
-        } catch (MongoException e) {
-            responseMessage = ERROR_DELETING_AN_ACCOUNT_MSG;
-            LOGGER.error(responseMessage, e);
-            return new GenericWriteResponse(responseMessage, e);
-        }
-
+        }, ERROR_DELETING_AN_ACCOUNT_MSG);
     }
 
     public GenericWriteResponse deleteAllAccounts() {
-        boolean accountsDaoSuccessful = false;
-        try {
-            accountsDaoSuccessful = accountsDao.deleteAllAccounts();
+        GenericWriteResponse firstResponse = safeWrite(() -> {
+            accountsDao.deleteAllAccounts();
+            return SUCCESS;
+        });
+        if (!firstResponse.getResponseText().equals(SUCCESS)) {
+            firstResponse.setResponseText(ERROR_DELETING_ACCOUNTS_MSG);
+            return firstResponse;
+        }
+        GenericWriteResponse secondResponse = safeWrite(() -> {
             customersDao.removeAllAccountsFromCustomers();
-            return new GenericWriteResponse(ALL_ACCOUNTS_DELETED_MSG);
-        } catch (MongoException e) {
-            String errorMessage;
-            if (!accountsDaoSuccessful) {
-                errorMessage = ERROR_DELETING_ACCOUNTS_MSG;
-            } else {
-                errorMessage = ERROR_REMOVING_ACCOUNTS_FROM_CUSTOMERS_MSG;
-            }
-            LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
+            return ALL_ACCOUNTS_DELETED_MSG;
+        });
+        if (!secondResponse.getResponseText().equals(ALL_ACCOUNTS_DELETED_MSG)) {
+            secondResponse.setResponseText(ERROR_REMOVING_ACCOUNTS_FROM_CUSTOMERS_MSG);
         }
+        return secondResponse;
     }
 
-    public GetAccountListResponse getAccountsByType(AccountType accountType) {
+    public GenericReadResponse<List<Account>> getAccountsByType(AccountType accountType) {
+        return safeRead(() -> accountsDao.getAccountsByAccountType(accountType));
+    }
+
+    public GenericReadResponse<List<Account>> getTopKLargestAccounts(GetTopKLargestAccountsV1Request request) {
+        return safeRead(() -> accountsDao.getTopKLargestAccounts(request));
+    }
+
+    public GenericReadResponse<List<AccountTotalsSummary>> getAccountTotalsSummaryListV1() {
+        return safeRead(accountsSummaryDao::getAccountTotalsSummaryListV1);
+    }
+
+    public GenericReadResponse<List<AccountTotalsSummary>> getAccountTotalsSummaryListV2() {
+        List<Document> daoSummaryList;
         try {
-            return new GetAccountListResponse(
-                    SUCCESS,
-                    accountsDao.getAccountsByAccountType(accountType)
-            );
+            daoSummaryList = accountsSummaryDao.getAccountTotalsSummaryListV2();
         } catch (MongoException e) {
-            LOGGER.error(GENERIC_RETRIEVAL_ERROR, e);
-            return new GetAccountListResponse(GENERIC_RETRIEVAL_ERROR, null);
-        }
-    }
-
-    public GetAccountListResponse getTopKLargestAccounts(GetTopKLargestAccountsV1Request request) {
-        try {
-            return new GetAccountListResponse(
-                    SUCCESS,
-                    accountsDao.getTopKLargestAccounts(request)
+            LOGGER.error(GENERIC_READ_ERROR, e);
+            return new GenericReadResponse<>(
+                    GENERIC_READ_ERROR,
+                    null,
+                    e
             );
-        } catch (MongoException e) {
-            LOGGER.error(GENERIC_RETRIEVAL_ERROR, e);
-            return new GetAccountListResponse(GENERIC_RETRIEVAL_ERROR, null);
         }
-    }
-
-    public GetAccountTotalsSummaryListResponse getAccountTotalsSummaryListV1() {
-        return new GetAccountTotalsSummaryListResponse(accountsSummaryDao.getAccountTotalsSummaryListV1());
-    }
-
-    public GetAccountTotalsSummaryListResponse getAccountTotalsSummaryListV2() {
-        List<Document> daoSummaryList = accountsSummaryDao.getAccountTotalsSummaryListV2();
         List<AccountTotalsSummary> pojoSummaryList = convertDocumentsToAccountTypeSummaryList(daoSummaryList);
-        return new GetAccountTotalsSummaryListResponse(pojoSummaryList);
+        return new GenericReadResponse<>(SUCCESS, pojoSummaryList);
     }
 
     private List<AccountTotalsSummary> convertDocumentsToAccountTypeSummaryList(List<Document> daoSummaryList) {
@@ -217,10 +169,19 @@ public class AccountsService {
         return pojoSummaryList;
     }
 
-    public GetAccountBucketSummaryResponseV1 getAccountBucketSummaryV1() {
+    public GenericReadResponse<List<AccountBucket>> getAccountBucketSummaryV1() {
         Integer[] bucketBoundaries = new Integer[]{ 0, 200000, 400000, 600000, 800000, 1000000 };
-
-        List<Document> daoBucketList = accountsSummaryDao.getAccountBucketsByBoundaries(bucketBoundaries);
+        List<Document> daoBucketList;
+        try {
+            daoBucketList = accountsSummaryDao.getAccountBucketsByBoundaries(bucketBoundaries);
+        } catch (MongoException e) {
+            LOGGER.error(GENERIC_READ_ERROR, e);
+            return new GenericReadResponse<>(
+                    GENERIC_READ_ERROR,
+                    null,
+                    e
+            );
+        }
         List<AccountBucket> pojoBucketList = new ArrayList<>();
 
         for (int i = 0; i < daoBucketList.size(); i++) {
@@ -235,7 +196,7 @@ public class AccountsService {
             pojoBucketList.add(pojoBucket);
         }
 
-        return new GetAccountBucketSummaryResponseV1(pojoBucketList);
+        return new GenericReadResponse<>(SUCCESS, pojoBucketList);
     }
 
 }

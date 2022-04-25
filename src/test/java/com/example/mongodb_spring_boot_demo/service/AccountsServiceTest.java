@@ -1,7 +1,8 @@
 package com.example.mongodb_spring_boot_demo.service;
 
+import com.example.mongodb_spring_boot_demo.api.GenericReadResponse;
 import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
-import com.example.mongodb_spring_boot_demo.api.accounts.*;
+import com.example.mongodb_spring_boot_demo.api.accounts.UpdateAccountBalanceV1Request;
 import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsDao;
 import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsSummaryDao;
 import com.example.mongodb_spring_boot_demo.dao.customers.CustomersDao;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.mongodb_spring_boot_demo.service.AccountsService.*;
+import static com.example.mongodb_spring_boot_demo.service.MongoExceptionHelper.SUCCESS;
 import static com.mongodb.assertions.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -52,9 +54,9 @@ class AccountsServiceTest {
         List<Account> expected = new ArrayList<>();
         when(accountsDao.getAllAccounts()).thenReturn(expected);
 
-        GetAccountListResponse response = accountsService.getAllAccounts();
+        GenericReadResponse<List<Account>> response = accountsService.getAllAccounts();
 
-        assertEquals(expected, response.getAccountList());
+        assertEquals(expected, response.getData());
     }
 
     @Test
@@ -62,10 +64,10 @@ class AccountsServiceTest {
         when(accountsDao.getAccountByAccountNumber(0))
                 .thenReturn(null);
 
-        GetAccountResponse response = accountsService.getAccountByNumber(0);
+        GenericReadResponse<Account> response = accountsService.getAccountByNumber(0);
 
         assertEquals(ACCOUNT_NOT_FOUND_MSG, response.getOperationSuccessStatus());
-        assertNull(response.getAccount());
+        assertNull(response.getData());
     }
 
     @Test
@@ -75,10 +77,10 @@ class AccountsServiceTest {
         when(accountsDao.getAccountByAccountNumber(accountNumber))
                 .thenReturn(expectedAccount);
 
-        GetAccountResponse response = accountsService.getAccountByNumber(accountNumber);
+        GenericReadResponse<Account> response = accountsService.getAccountByNumber(accountNumber);
 
         assertEquals(SUCCESS, response.getOperationSuccessStatus());
-        assertEquals(expectedAccount, response.getAccount());
+        assertEquals(expectedAccount, response.getData());
     }
 
     @Test
@@ -216,9 +218,9 @@ class AccountsServiceTest {
         List<AccountTotalsSummary> expectedList = new ArrayList<>();
         when(accountsSummaryDao.getAccountTotalsSummaryListV1()).thenReturn(expectedList);
 
-        GetAccountTotalsSummaryListResponse response = accountsService.getAccountTotalsSummaryListV1();
+        GenericReadResponse<List<AccountTotalsSummary>> response = accountsService.getAccountTotalsSummaryListV1();
 
-        assertEquals(expectedList, response.getAccountTotalsSummaryList());
+        assertEquals(expectedList, response.getData());
     }
 
     @Test
@@ -232,9 +234,10 @@ class AccountsServiceTest {
         List<Document> documentList = List.of(returnedDocument);
         when(accountsSummaryDao.getAccountTotalsSummaryListV2()).thenReturn(documentList);
 
-        GetAccountTotalsSummaryListResponse response = accountsService.getAccountTotalsSummaryListV2();
+        GenericReadResponse<List<AccountTotalsSummary>> response =
+                accountsService.getAccountTotalsSummaryListV2();
 
-        AccountTotalsSummary summary = response.getAccountTotalsSummaryList().get(0);
+        AccountTotalsSummary summary = response.getData().get(0);
         assertEquals(accountType, summary.getAccountType());
         assertEquals(numberOfAccounts, summary.getNumberOfAccounts());
         assertEquals(balancesTotal, summary.getBalancesTotal());
@@ -249,9 +252,9 @@ class AccountsServiceTest {
         }
         when(accountsSummaryDao.getAccountBucketsByBoundaries(any())).thenReturn(documentList);
 
-        GetAccountBucketSummaryResponseV1 response = accountsService.getAccountBucketSummaryV1();
+        GenericReadResponse<List<AccountBucket>> response = accountsService.getAccountBucketSummaryV1();
 
-        List<AccountBucket> pojoBucketList = response.getAccountBucketList();
+        List<AccountBucket> pojoBucketList = response.getData();
         String[] expectedBucketRanges = {
                 "0-200000",
                 "200000-400000",

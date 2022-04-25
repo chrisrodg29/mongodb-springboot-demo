@@ -61,7 +61,7 @@ public class CustomerWithAccountDetail {
         this.addressList = addressList;
     }
 
-    public List<Account> getAccountNumbers() {
+    public List<Account> getAccounts() {
         if (this.accounts == null) {
             this.accounts = new ArrayList<>();
         }

@@ -1,9 +1,9 @@
 package com.example.mongodb_spring_boot_demo.secondary_db_config_example;
 
+import com.example.mongodb_spring_boot_demo.api.GenericReadResponse;
 import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
 import com.example.mongodb_spring_boot_demo.api.accounts.DeleteAccountByNumberRequestV1;
 import com.example.mongodb_spring_boot_demo.api.accounts.GetAccountByNumberV1Request;
-import com.example.mongodb_spring_boot_demo.api.accounts.GetAccountResponse;
 import com.example.mongodb_spring_boot_demo.api.accounts.UpdateAccountBalanceV1Request;
 import com.example.mongodb_spring_boot_demo.model.accounts.Account;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -23,12 +23,12 @@ public class SecondaryDatabaseController {
     }
 
     @GetMapping("getAllAccounts/V1")
-    public List<Account> getAllAccountsV1() {
+    public GenericReadResponse<List<Account>> getAllAccountsV1() {
         return accountsService.getAllAccounts();
     }
 
     @GetMapping("getAccountByNumber/V1")
-    public GetAccountResponse getAccountByNumberV1(@RequestBody GetAccountByNumberV1Request request) {
+    public GenericReadResponse<Account> getAccountByNumberV1(@RequestBody GetAccountByNumberV1Request request) {
         return accountsService.getAccountByNumber(request.getAccountNumber());
     }
 

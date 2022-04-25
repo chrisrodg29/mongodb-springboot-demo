@@ -1,9 +1,15 @@
 package com.example.mongodb_spring_boot_demo.controller;
 
+import com.example.mongodb_spring_boot_demo.api.GenericReadResponse;
 import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
 import com.example.mongodb_spring_boot_demo.api.accounts.*;
+import com.example.mongodb_spring_boot_demo.model.accounts.Account;
+import com.example.mongodb_spring_boot_demo.model.accounts.AccountBucket;
+import com.example.mongodb_spring_boot_demo.model.accounts.AccountTotalsSummary;
 import com.example.mongodb_spring_boot_demo.service.AccountsService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/accounts")
@@ -16,12 +22,12 @@ public class AccountsController {
     }
 
     @GetMapping("getAllAccounts/V1")
-    public GetAccountListResponse getAllAccountsV1() {
+    public GenericReadResponse<List<Account>> getAllAccountsV1() {
         return accountsService.getAllAccounts();
     }
 
     @GetMapping("getAccountByNumber/V1")
-    public GetAccountResponse getAccountByNumberV1(@RequestBody GetAccountByNumberV1Request request) {
+    public GenericReadResponse<Account> getAccountByNumberV1(@RequestBody GetAccountByNumberV1Request request) {
         return accountsService.getAccountByNumber(request.getAccountNumber());
     }
 
@@ -46,27 +52,27 @@ public class AccountsController {
     }
 
     @GetMapping("getAccountsByType/V1")
-    public GetAccountListResponse getAccountByTypeV1(@RequestBody GetAccountsByTypeV1Request request) {
+    public GenericReadResponse<List<Account>> getAccountByTypeV1(@RequestBody GetAccountsByTypeV1Request request) {
         return accountsService.getAccountsByType(request.getAccountType());
     }
 
     @GetMapping("getTopKLargestAccounts/V1")
-    public GetAccountListResponse getTopKLargestAccountsV1(@RequestBody GetTopKLargestAccountsV1Request request) {
+    public GenericReadResponse<List<Account>> getTopKLargestAccountsV1(@RequestBody GetTopKLargestAccountsV1Request request) {
         return accountsService.getTopKLargestAccounts(request);
     }
 
     @GetMapping("getAccountTotalsSummaryList/V1")
-    public GetAccountTotalsSummaryListResponse getAccountTotalsSummaryListV1() {
+    public GenericReadResponse<List<AccountTotalsSummary>> getAccountTotalsSummaryListV1() {
         return accountsService.getAccountTotalsSummaryListV1();
     }
 
     @GetMapping("getAccountTotalsSummaryList/V2")
-    public GetAccountTotalsSummaryListResponse getAccountTotalsSummaryListV2() {
+    public GenericReadResponse<List<AccountTotalsSummary>> getAccountTotalsSummaryListV2() {
         return accountsService.getAccountTotalsSummaryListV2();
     }
 
     @GetMapping("getAccountBucketSummary/V1")
-    public GetAccountBucketSummaryResponseV1 getAccountBucketSummaryV1() {
+    public GenericReadResponse<List<AccountBucket>> getAccountBucketSummaryV1() {
         return accountsService.getAccountBucketSummaryV1();
     }
 

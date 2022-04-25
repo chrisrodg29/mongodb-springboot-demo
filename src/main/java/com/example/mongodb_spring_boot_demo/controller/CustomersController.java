@@ -1,12 +1,14 @@
 package com.example.mongodb_spring_boot_demo.controller;
 
+import com.example.mongodb_spring_boot_demo.api.GenericReadResponse;
 import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
 import com.example.mongodb_spring_boot_demo.api.customers.*;
 import com.example.mongodb_spring_boot_demo.model.customers.Customer;
+import com.example.mongodb_spring_boot_demo.model.customers.CustomerWithAccountDetail;
 import com.example.mongodb_spring_boot_demo.service.CustomersService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/customers")
@@ -19,22 +21,22 @@ public class CustomersController {
     }
 
     @GetMapping("getAllCustomers/V1")
-    public ArrayList<Customer> getAllCustomersV1() {
+    public GenericReadResponse<List<Customer>> getAllCustomersV1() {
         return customersService.getAllCustomers();
     }
 
     @GetMapping("getCustomerById/V1")
-    public GetCustomerByIdV1Response getCustomerById(@RequestBody GetCustomerByIdV1Request request) {
+    public GenericReadResponse<Customer> getCustomerById(@RequestBody GetCustomerByIdV1Request request) {
         return customersService.getCustomerById(request.getCustomerId());
     }
 
     @GetMapping("getCustomersByAccountNumber/V1")
-    public GetCustomersByAccountNumberV1Response getCustomersByAccountNumberV1(@RequestBody GetCustomersByAccountNumberV1Request request) {
+    public GenericReadResponse<List<Customer>> getCustomersByAccountNumberV1(@RequestBody GetCustomersByAccountNumberV1Request request) {
         return customersService.getCustomersByAccountNumber(request.getAccountNumber());
     }
 
     @GetMapping("getCustomerWithAccountDetail/V1")
-    public GetCustomerWithAccountDetailV1Response getCustomerWithAccountDetailV1(@RequestBody GetCustomerWithAccountDetailV1Request request) {
+    public GenericReadResponse<CustomerWithAccountDetail> getCustomerWithAccountDetailV1(@RequestBody GetCustomerWithAccountDetailV1Request request) {
         return customersService.getCustomerWithAccountDetail(request.getCustomerId());
     }
 

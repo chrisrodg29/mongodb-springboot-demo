@@ -40,25 +40,15 @@ public class FakerService {
         return account;
     }
 
-    public Phone getNewPhone() {
-        Phone phone = new Phone();
-        phone.setPhoneNumber(faker.phoneNumber().phoneNumber());
-        phone.setUsageType(getRandomEnumValue(PhoneUsageType.class));
-        phone.setPrimary(true);
-        return phone;
+    public List<Customer> getNewCustomers(List<Account> accounts) {
+        List<Customer> customerList = new ArrayList<>();
+        for (Account account : accounts) {
+            customerList.add(getNewCustomer(account));
+        }
+        return customerList;
     }
 
-    public Address getNewAddress() {
-        Address address = new Address();
-        address.setAddressLine1(faker.address().streetAddress());
-        address.setCity(faker.address().city());
-        address.setStateCode(faker.address().stateAbbr());
-        address.setPostalCode(faker.address().zipCode());
-        address.setCountryCode("US");
-        return address;
-    }
-
-    public Customer getNewCustomer(Account account) {
+    private Customer getNewCustomer(Account account) {
         Customer customer = new Customer();
         customer.setCustomerId(faker.number().numberBetween(30001, 40000));
         customer.setFirstName(faker.name().firstName());
@@ -67,6 +57,24 @@ public class FakerService {
         customer.getAddressList().add(getNewAddress());
         customer.getPhoneList().add(getNewPhone());
         return customer;
+    }
+
+    private Phone getNewPhone() {
+        Phone phone = new Phone();
+        phone.setPhoneNumber(faker.phoneNumber().phoneNumber());
+        phone.setUsageType(getRandomEnumValue(PhoneUsageType.class));
+        phone.setPrimary(true);
+        return phone;
+    }
+
+    private Address getNewAddress() {
+        Address address = new Address();
+        address.setAddressLine1(faker.address().streetAddress());
+        address.setCity(faker.address().city());
+        address.setStateCode(faker.address().stateAbbr());
+        address.setPostalCode(faker.address().zipCode());
+        address.setCountryCode("US");
+        return address;
     }
 
     private <T extends Enum<T>> T getRandomEnumValue(Class<T> type) {

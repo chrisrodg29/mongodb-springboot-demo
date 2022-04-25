@@ -1,35 +1,40 @@
 package com.example.mongodb_spring_boot_demo.service;
 
+import com.example.mongodb_spring_boot_demo.api.GenericReadResponse;
 import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
-import com.example.mongodb_spring_boot_demo.api.customers.*;
+import com.example.mongodb_spring_boot_demo.api.customers.LinkAccountToCustomerV1Request;
+import com.example.mongodb_spring_boot_demo.api.customers.RemoveAccountFromCustomerV1Request;
 import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsDao;
 import com.example.mongodb_spring_boot_demo.dao.customers.CustomersDao;
 import com.example.mongodb_spring_boot_demo.model.accounts.Account;
 import com.example.mongodb_spring_boot_demo.model.customers.Customer;
 import com.example.mongodb_spring_boot_demo.model.customers.CustomerWithAccountDetail;
-import com.mongodb.MongoWriteException;
 import com.mongodb.client.result.UpdateResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.mongodb_spring_boot_demo.service.MongoExceptionHelper.*;
 
 @Service
 public class CustomersService {
 
-    static final String SUCCESS = "success";
     static final String NO_ACCOUNT_FOUND_MSG = "That account number was not found";
     static final String NO_CUSTOMER_FOUND_MSG = "No customer was found with that id";
     static final String NO_ACCOUNT_NUMBER_MATCH_MSG = "No customers were found with that account number";
     static final String ERROR_INSERTING_ACCOUNTS_MSG = "Error inserting accounts; No customers added";
     static final String NEW_CUSTOMERS_INSERTED_MSG = "New customers inserted";
     static final String ERROR_INSERTING_CUSTOMERS_MSG = "Error inserting customers";
+    static final String CUSTOMER_UPDATED_MSG = "Customer entry updated";
+    static final String ERROR_UPDATING_CUSTOMER_MSG = "Error updating customer";
     static final String ACCOUNT_LINKED_MSG = "Account linked to customer";
     static final String ERROR_LINKING_ACCOUNT_MSG = "Error linking account to customer";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CustomersService.class);
+    static final String ACCOUNT_NOT_LINKED_MSG = "That account is not linked to that customer";
+    static final String ACCOUNT_REMOVED_FROM_ONE_MSG = "Account removed from customer";
+    static final String ACCOUNT_REMOVED_FROM_ALL_MSG = "Account removed from all customers";
+    static final String ERROR_REMOVING_ACCOUNT_MSG = "Error removing account from customers";
+    static final String ALL_CUSTOMERS_DELETED_MSG = "All customers deleted";
+    static final String ERROR_DELETING_CUSTOMERS_MSG = "Error deleting customers";
 
     private final CustomersDao customersDao;
     private final AccountsDao accountsDao;
@@ -41,168 +46,113 @@ public class CustomersService {
         this.fakerService = fakerService;
     }
 
-    public ArrayList<Customer> getAllCustomers() {
-        return customersDao.getAllCustomers();
+    public GenericReadResponse<List<Customer>> getAllCustomers() {
+        return safeRead(customersDao::getAllCustomers);
     }
 
-    public GetCustomerByIdV1Response getCustomerById(int customerId) {
-        Customer customer = customersDao.getCustomerById(customerId);
-        if (customer == null) {
-            return new GetCustomerByIdV1Response(
-                    NO_CUSTOMER_FOUND_MSG,
-                    null
-            );
-        } else {
-            return new GetCustomerByIdV1Response(
-                    SUCCESS,
-                    customer
-            );
-        }
+    public GenericReadResponse<Customer> getCustomerById(int customerId) {
+        return safeRead(
+                () -> customersDao.getCustomerById(customerId),
+                NO_CUSTOMER_FOUND_MSG
+        );
     }
 
-    public GetCustomersByAccountNumberV1Response getCustomersByAccountNumber(int accountNumber) {
-        List<Customer> customerList = customersDao.getCustomersByAccountNumber(accountNumber);
-        if (customerList.isEmpty()) {
-            return new GetCustomersByAccountNumberV1Response(
-                    NO_ACCOUNT_NUMBER_MATCH_MSG,
-                    null
-            );
-        } else {
-            return new GetCustomersByAccountNumberV1Response(
-                    SUCCESS,
-                    customerList
-            );
-        }
+    public GenericReadResponse<List<Customer>> getCustomersByAccountNumber(int accountNumber) {
+        return safeRead(
+                () -> customersDao.getCustomersByAccountNumber(accountNumber),
+                NO_ACCOUNT_NUMBER_MATCH_MSG
+        );
     }
 
-    public GetCustomerWithAccountDetailV1Response getCustomerWithAccountDetail(int customerId) {
-        CustomerWithAccountDetail customerList =
-                customersDao.getCustomerWithAccountDetailById(customerId);
-        if (customerList == null) {
-            return new GetCustomerWithAccountDetailV1Response(
-                    NO_CUSTOMER_FOUND_MSG,
-                    null
-            );
-        } else {
-            return new GetCustomerWithAccountDetailV1Response(
-                    SUCCESS,
-                    customerList
-            );
-        }
+    public GenericReadResponse<CustomerWithAccountDetail> getCustomerWithAccountDetail(int customerId) {
+        return safeRead(
+                () -> customersDao.getCustomerWithAccountDetailById(customerId),
+                NO_CUSTOMER_FOUND_MSG
+        );
     }
 
     public GenericWriteResponse insertTenCustomers() {
         List<Account> accountList = fakerService.getNewAccounts(10);
-        try {
+        GenericWriteResponse firstResponse = safeWrite(() -> {
             accountsDao.insertAccounts(accountList);
-        } catch (MongoWriteException e) {
-            String errorMessage = ERROR_INSERTING_ACCOUNTS_MSG;
-            LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
+            return SUCCESS;
+        });
+        if (!firstResponse.getResponseText().equals(SUCCESS)) {
+            firstResponse.setResponseText(ERROR_INSERTING_ACCOUNTS_MSG);
+            return firstResponse;
         }
 
-        List<Customer> customerList = new ArrayList<>();
-        int count = 0;
-        while (count < accountList.size()) {
-            customerList.add(fakerService.getNewCustomer(
-                    accountList.get(count)
-            ));
-            count++;
-        }
-
-        try {
+        List<Customer> customerList = fakerService.getNewCustomers(accountList);
+        GenericWriteResponse secondResponse = safeWrite(() -> {
             customersDao.insertCustomers(customerList);
-            return new GenericWriteResponse(NEW_CUSTOMERS_INSERTED_MSG);
-        } catch (MongoWriteException e) {
-            String errorMessage = ERROR_INSERTING_CUSTOMERS_MSG;
-            LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
+            return NEW_CUSTOMERS_INSERTED_MSG;
+        });
+        if (!secondResponse.getResponseText().equals(NEW_CUSTOMERS_INSERTED_MSG)) {
+            secondResponse.setResponseText(ERROR_INSERTING_CUSTOMERS_MSG);
         }
+        return secondResponse;
     }
 
     public GenericWriteResponse replaceCustomer(Customer customer) {
-        try {
+        return safeWrite(() -> {
             UpdateResult result = customersDao.replaceCustomer(customer);
-            String responseText;
             if (result.getMatchedCount() == 0) {
-                responseText = NO_CUSTOMER_FOUND_MSG;
+                return NO_CUSTOMER_FOUND_MSG;
             } else {
-                responseText = "Customer entry updated";
+                return CUSTOMER_UPDATED_MSG;
             }
-            return new GenericWriteResponse(responseText);
-        } catch (MongoWriteException e) {
-            String errorMessage = "Error updating customer";
-            LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
-        }
+        }, ERROR_UPDATING_CUSTOMER_MSG);
     }
 
     public GenericWriteResponse linkAccountToCustomer(LinkAccountToCustomerV1Request request) {
-        Account account = accountsDao.getAccountByAccountNumber(request.getAccountNumber());
-        if (account == null) {
+        GenericReadResponse<Account> readResponse = safeRead(
+                () -> accountsDao.getAccountByAccountNumber(request.getAccountNumber()),
+                NO_ACCOUNT_FOUND_MSG
+        );
+        if (readResponse.getData() == null) {
             return new GenericWriteResponse(NO_ACCOUNT_FOUND_MSG);
         }
-        try {
+        return safeWrite(() -> {
             UpdateResult result = customersDao.addAccountNumberToCustomer(
                     request.getCustomerId(),
                     request.getAccountNumber()
             );
-            String responseText;
             if (result.getMatchedCount() == 0) {
-                responseText = NO_CUSTOMER_FOUND_MSG;
+                return NO_CUSTOMER_FOUND_MSG;
             } else {
-                responseText = ACCOUNT_LINKED_MSG;
+                return ACCOUNT_LINKED_MSG;
             }
-            return new GenericWriteResponse(responseText);
-        } catch (MongoWriteException e) {
-            String errorMessage = ERROR_LINKING_ACCOUNT_MSG;
-            LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
-        }
+        }, ERROR_LINKING_ACCOUNT_MSG);
     }
 
     public GenericWriteResponse removeAccountFromCustomer(RemoveAccountFromCustomerV1Request request) {
-        try {
+        return safeWrite(() -> {
             UpdateResult result = customersDao.removeAccountFromCustomer(
                     request.getCustomerId(),
                     request.getAccountNumber()
             );
-            String responseText;
             if (result.getMatchedCount() == 0) {
-                responseText = NO_CUSTOMER_FOUND_MSG;
+                return NO_CUSTOMER_FOUND_MSG;
             } else if (result.getModifiedCount() == 0) {
-                responseText = "That account is not linked to that customer";
+                return ACCOUNT_NOT_LINKED_MSG;
             } else {
-                responseText = "Account removed from customer";
+                return ACCOUNT_REMOVED_FROM_ONE_MSG;
             }
-            return new GenericWriteResponse(responseText);
-        } catch (MongoWriteException e) {
-            String errorMessage = "Error removing account from customer";
-            LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
-        }
+        }, ERROR_REMOVING_ACCOUNT_MSG);
     }
 
     public GenericWriteResponse removeAccountFromAllCustomers(int accountNumber) {
-        try {
+        return safeWrite(() -> {
             customersDao.removeAccountFromAllCustomers(accountNumber);
-            return new GenericWriteResponse("Account removed from all customers");
-        } catch (MongoWriteException e) {
-            String errorMessage = "Error removing account from customers";
-            LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
-        }
+            return ACCOUNT_REMOVED_FROM_ALL_MSG;
+        }, ERROR_REMOVING_ACCOUNT_MSG);
     }
 
     public GenericWriteResponse deleteAllCustomers() {
-        try {
+        return safeWrite(() -> {
             customersDao.deleteAllCustomers();
-            return new GenericWriteResponse("All customers deleted");
-        } catch (MongoWriteException e) {
-            String errorMessage = "Error deleting customers";
-            LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
-        }
+            return ALL_CUSTOMERS_DELETED_MSG;
+        }, ERROR_DELETING_CUSTOMERS_MSG);
     }
 
 }
