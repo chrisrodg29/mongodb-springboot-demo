@@ -3,6 +3,7 @@ package com.example.mongodb_spring_boot_demo.secondary_db_config_example;
 import com.mongodb.*;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +12,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-
-import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
@@ -29,7 +28,7 @@ public class SecondaryMongoDBConfiguration {
 
     @Bean
     @Scope(value = ConfigurableListableBeanFactory.SCOPE_SINGLETON)
-    public MongoClient secondaryMongoClient() {
+    public MongoClient mongoClient2() {
         ConnectionString connectionString = new ConnectionString(mongoUri);
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
@@ -56,8 +55,10 @@ public class SecondaryMongoDBConfiguration {
         );
     }
 
-    public String getDatabaseName() {
-        return databaseName;
+    @Bean
+    @Scope(value = ConfigurableListableBeanFactory.SCOPE_SINGLETON)
+    public MongoDatabase database2(MongoClient mongoClient2) {
+        return mongoClient2.getDatabase(databaseName);
     }
 
 }

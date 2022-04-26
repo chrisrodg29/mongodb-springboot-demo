@@ -3,6 +3,7 @@ package com.example.mongodb_spring_boot_demo.config.data;
 import com.mongodb.*;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,8 +46,10 @@ public class MongoDBConfiguration {
         );
     }
 
-    public String getDatabaseName() {
-        return databaseName;
+    @Bean
+    @Scope(value = ConfigurableListableBeanFactory.SCOPE_SINGLETON)
+    public MongoDatabase database(MongoClient mongoClient) {
+        return mongoClient.getDatabase(databaseName);
     }
 
 }

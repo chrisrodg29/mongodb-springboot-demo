@@ -1,11 +1,9 @@
 package com.example.mongodb_spring_boot_demo.dao.customers;
 
-import com.example.mongodb_spring_boot_demo.config.data.MongoDBConfiguration;
-import com.example.mongodb_spring_boot_demo.dao.AbstractDao;
 import com.example.mongodb_spring_boot_demo.model.customers.Customer;
 import com.example.mongodb_spring_boot_demo.model.customers.CustomerWithAccountDetail;
-import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
@@ -19,18 +17,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.exists;
 
 @Repository
-public class CustomersDao extends AbstractDao {
+public class CustomersDao {
 
     private static final String COLLECTION = "customers";
 
+    private final MongoDatabase db;
     private final MongoCollection<Customer> customerCollection;
 
-    public CustomersDao(MongoClient mongoClient, MongoDBConfiguration dbConfiguration) {
-        super(mongoClient, dbConfiguration);
-        this.customerCollection = db.getCollection(COLLECTION, Customer.class);
+    public CustomersDao(MongoDatabase database) {
+        this.db = database;
+        this.customerCollection = this.db.getCollection(COLLECTION, Customer.class);
     }
 
     public ArrayList<Customer> getAllCustomers() {

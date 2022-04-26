@@ -1,13 +1,11 @@
 package com.example.mongodb_spring_boot_demo.dao.accounts;
 
 import com.example.mongodb_spring_boot_demo.api.accounts.GetTopKLargestAccountsV1Request;
-import com.example.mongodb_spring_boot_demo.config.data.MongoDBConfiguration;
-import com.example.mongodb_spring_boot_demo.dao.AbstractDao;
 import com.example.mongodb_spring_boot_demo.model.accounts.Account;
 import com.example.mongodb_spring_boot_demo.model.accounts.AccountType;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertManyResult;
@@ -25,15 +23,14 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Sorts.descending;
 
 @Repository
-public class AccountsDao extends AbstractDao {
+public class AccountsDao {
 
     private static final String COLLECTION = "accounts";
 
     private final MongoCollection<Account> accountsCollection;
 
-    public AccountsDao(MongoClient mongoClient, MongoDBConfiguration dbConfiguration) {
-        super(mongoClient, dbConfiguration);
-        this.accountsCollection = db.getCollection(COLLECTION, Account.class);
+    public AccountsDao(MongoDatabase database) {
+        this.accountsCollection = database.getCollection(COLLECTION, Account.class);
     }
 
     public boolean insertAccounts(List<Account> accountList) {

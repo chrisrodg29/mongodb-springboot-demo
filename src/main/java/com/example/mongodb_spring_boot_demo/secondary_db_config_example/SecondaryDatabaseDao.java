@@ -1,7 +1,6 @@
 package com.example.mongodb_spring_boot_demo.secondary_db_config_example;
 
 import com.example.mongodb_spring_boot_demo.model.accounts.Account;
-import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Updates;
@@ -27,11 +26,9 @@ public class SecondaryDatabaseDao {
 
     private final MongoCollection<Account> accountsCollection;
 
-    public SecondaryDatabaseDao(MongoClient secondaryMongoClient, SecondaryMongoDBConfiguration secondaryConfiguration) {
-        MongoDatabase secondaryDb = secondaryMongoClient.getDatabase(
-                secondaryConfiguration.getDatabaseName()
-        );
-        this.accountsCollection = secondaryDb.getCollection(COLLECTION, Account.class);
+    public SecondaryDatabaseDao(MongoDatabase database2) {
+        this.accountsCollection = database2
+                .getCollection(COLLECTION, Account.class);
     }
 
     public boolean insertAccounts(List<Account> accountList) {

@@ -1,7 +1,5 @@
 package com.example.mongodb_spring_boot_demo.healthcheck;
 
-import com.example.mongodb_spring_boot_demo.secondary_db_config_example.SecondaryMongoDBConfiguration;
-import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -11,15 +9,13 @@ import org.springframework.stereotype.Repository;
 @ConditionalOnProperty(value = "spring.mongodb2.uri")
 public class HealthCheckDao {
 
-    private final MongoDatabase secondaryDb;
+    private final MongoDatabase database2;
 
-    public HealthCheckDao(MongoClient secondaryMongoClient, SecondaryMongoDBConfiguration secondaryConfiguration) {
-        this.secondaryDb = secondaryMongoClient.getDatabase(
-                secondaryConfiguration.getDatabaseName()
-        );
+    public HealthCheckDao(MongoDatabase database2) {
+        this.database2 = database2;
     }
 
     public void performHealthCheck() {
-        secondaryDb.runCommand(new Document("dbStats", 1));
+        database2.runCommand(new Document("dbStats", 1));
     }
 }

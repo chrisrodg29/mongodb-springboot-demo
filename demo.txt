@@ -2,7 +2,7 @@ Demonstration:
 Show POJOs for Account and Customer.
 Show the requests in Postman.
     * Make Caveat about FakerService
-Show MongoDBConfiguration
+Show MongoDBConfiguration and application.yml
     * Explain Client url and settings
 Show AbstractDao
 Split to AccountsService and AccountsDao
@@ -11,7 +11,13 @@ Split to AccountsService and AccountsDao
     (create, readAll, readByField, update, delete)
 
 
-
+Demo file order:
+Account
+Customer
+MongoDBConfiguration
+application.yml
+AbstractDao
+AccountsDao
 
 
 

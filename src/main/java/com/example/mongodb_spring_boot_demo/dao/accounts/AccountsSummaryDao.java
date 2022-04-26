@@ -1,10 +1,8 @@
 package com.example.mongodb_spring_boot_demo.dao.accounts;
 
-import com.example.mongodb_spring_boot_demo.config.data.MongoDBConfiguration;
-import com.example.mongodb_spring_boot_demo.dao.AbstractDao;
 import com.example.mongodb_spring_boot_demo.model.accounts.AccountTotalsSummary;
-import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.BsonField;
 import com.mongodb.client.model.BucketOptions;
@@ -20,15 +18,16 @@ import static com.mongodb.client.model.Aggregates.bucket;
 import static com.mongodb.client.model.Aggregates.group;
 
 @Repository
-public class AccountsSummaryDao extends AbstractDao {
+public class AccountsSummaryDao {
 
     private static final String COLLECTION = "accounts";
+    private final MongoDatabase db;
     private final MongoCollection<AccountTotalsSummary> collectionWithAccountTotalsSummaryCodec;
 
-    public AccountsSummaryDao(MongoClient mongoClient, MongoDBConfiguration dbConfiguration) {
-        super(mongoClient, dbConfiguration);
+    public AccountsSummaryDao(MongoDatabase database) {
+        this.db = database;
         collectionWithAccountTotalsSummaryCodec =
-                db.getCollection(COLLECTION, AccountTotalsSummary.class);
+                this.db.getCollection(COLLECTION, AccountTotalsSummary.class);
     }
 
     public List<AccountTotalsSummary> getAccountTotalsSummaryListV1() {
