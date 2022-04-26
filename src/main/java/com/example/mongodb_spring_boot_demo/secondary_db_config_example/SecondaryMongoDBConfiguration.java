@@ -12,6 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
+import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
@@ -30,6 +33,12 @@ public class SecondaryMongoDBConfiguration {
         ConnectionString connectionString = new ConnectionString(mongoUri);
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
+                .applyToSocketSettings(builder -> {
+                    builder.connectTimeout(2000, MILLISECONDS);
+                })
+                .applyToClusterSettings(builder -> {
+                    builder.serverSelectionTimeout(1, MILLISECONDS);
+                })
                 .retryWrites(true)
                 .writeConcern(WriteConcern.MAJORITY)
                 .codecRegistry(getCodecRegistry())

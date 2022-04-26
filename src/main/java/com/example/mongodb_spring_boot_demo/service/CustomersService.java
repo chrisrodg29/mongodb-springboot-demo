@@ -32,7 +32,7 @@ public class CustomersService {
     static final String ACCOUNT_NOT_LINKED_MSG = "That account is not linked to that customer";
     static final String ACCOUNT_REMOVED_FROM_ONE_MSG = "Account removed from customer";
     static final String ACCOUNT_REMOVED_FROM_ALL_MSG = "Account removed from all customers";
-    static final String ERROR_REMOVING_ACCOUNT_MSG = "Error removing account from customers";
+    static final String ERROR_REMOVING_ACCOUNT_MSG = "Error removing account";
     static final String ALL_CUSTOMERS_DELETED_MSG = "All customers deleted";
     static final String ERROR_DELETING_CUSTOMERS_MSG = "Error deleting customers";
 

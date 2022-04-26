@@ -1,9 +1,9 @@
 Demonstration:
+Show POJOs for Account and Customer.
 Show the requests in Postman.
     * Make Caveat about FakerService
 Show MongoDBConfiguration
     * Explain Client url and settings
-Show POJOs for Account and Customer.
 Show AbstractDao
 Split to AccountsService and AccountsDao
 * Explain codec
