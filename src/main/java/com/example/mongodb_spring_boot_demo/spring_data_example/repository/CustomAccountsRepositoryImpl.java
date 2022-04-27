@@ -2,7 +2,6 @@ package com.example.mongodb_spring_boot_demo.spring_data_example.repository;
 
 import com.example.mongodb_spring_boot_demo.api.accounts.GetTopKLargestAccountsV1Request;
 import com.example.mongodb_spring_boot_demo.model.accounts.Account;
-import com.example.mongodb_spring_boot_demo.model.accounts.AccountTotalsSummary;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.springframework.data.domain.Sort;
@@ -58,23 +57,7 @@ public class CustomAccountsRepositoryImpl implements CustomAccountsRepository {
         return results.getMappedResults();
     }
 
-    public List<AccountTotalsSummary> getAccountTotalsSummaryListV1() {
-        GroupOperation groupOperation =
-                Aggregation.group("accountType")
-                        .count().as("numberOfAccounts")
-                        .sum(ConvertOperators.ToDecimal.toDecimal("$balance"))
-//                        .sum(AggregationExpression.from(MongoExpression.create(
-//                                "{$convert: { input: '$balance', to: 'decimal'}}")))
-                        .as("balancesTotal");
-
-        AggregationResults<AccountTotalsSummary> results = mongoTemplate.aggregate(
-                Aggregation.newAggregation(groupOperation),
-                "account",
-                AccountTotalsSummary.class
-        );
-        return results.getMappedResults();
-    }
-
+    @Override
     public List<Document> getAccountBucketsByBoundaries(Integer[] boundaries) {
         BucketOperation bucketOperation =
                 Aggregation.bucket(ConvertOperators.ToDecimal.toDecimal("$balance"))

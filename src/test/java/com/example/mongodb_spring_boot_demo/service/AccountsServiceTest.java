@@ -4,7 +4,7 @@ import com.example.mongodb_spring_boot_demo.api.GenericReadResponse;
 import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
 import com.example.mongodb_spring_boot_demo.api.accounts.UpdateAccountBalanceV1Request;
 import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsDao;
-import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsSummaryDao;
+import com.example.mongodb_spring_boot_demo.dao.accounts.AccountTransformationsDao;
 import com.example.mongodb_spring_boot_demo.dao.customers.CustomersDao;
 import com.example.mongodb_spring_boot_demo.model.accounts.Account;
 import com.example.mongodb_spring_boot_demo.model.accounts.AccountBucket;
@@ -40,7 +40,7 @@ class AccountsServiceTest {
     @Mock
     AccountsDao accountsDao;
     @Mock
-    AccountsSummaryDao accountsSummaryDao;
+    AccountTransformationsDao accountTransformationsDao;
     @Mock
     CustomersDao customersDao;
 
@@ -216,7 +216,7 @@ class AccountsServiceTest {
     @Test
     void testGetAccountTotalsSummaryListV1() {
         List<AccountTotalsSummary> expectedList = new ArrayList<>();
-        when(accountsSummaryDao.getAccountTotalsSummaryListV1()).thenReturn(expectedList);
+        when(accountTransformationsDao.getAccountTotalsSummaryListV1()).thenReturn(expectedList);
 
         GenericReadResponse<List<AccountTotalsSummary>> response = accountsService.getAccountTotalsSummaryListV1();
 
@@ -232,7 +232,7 @@ class AccountsServiceTest {
                 .append("numberOfAccounts", numberOfAccounts)
                 .append("balancesTotal", new Decimal128(balancesTotal));
         List<Document> documentList = List.of(returnedDocument);
-        when(accountsSummaryDao.getAccountTotalsSummaryListV2()).thenReturn(documentList);
+        when(accountTransformationsDao.getAccountTotalsSummaryListV2()).thenReturn(documentList);
 
         GenericReadResponse<List<AccountTotalsSummary>> response =
                 accountsService.getAccountTotalsSummaryListV2();
@@ -250,7 +250,7 @@ class AccountsServiceTest {
         for (int number : accountsPerBucket) {
             documentList.add(new Document("numberOfAccounts", number));
         }
-        when(accountsSummaryDao.getAccountBucketsByBoundaries(any())).thenReturn(documentList);
+        when(accountTransformationsDao.getAccountBucketsByBoundaries(any())).thenReturn(documentList);
 
         GenericReadResponse<List<AccountBucket>> response = accountsService.getAccountBucketSummaryV1();
 

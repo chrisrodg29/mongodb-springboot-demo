@@ -1,5 +1,5 @@
 
-spring:
+databaseConfiguration:
   mongodb:
     uri: ${mongodb.uri}
     database: banking_demo

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static com.example.mongodb_spring_boot_demo.util.MongoExceptionHelper.*;
 import static org.junit.jupiter.api.Assertions.*;

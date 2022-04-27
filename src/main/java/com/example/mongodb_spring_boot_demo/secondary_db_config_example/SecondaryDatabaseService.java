@@ -14,7 +14,7 @@ import java.util.List;
 import static com.example.mongodb_spring_boot_demo.util.MongoExceptionHelper.*;
 
 @Service
-@ConditionalOnProperty(value = "spring.mongodb2.uri")
+@ConditionalOnProperty(value = "databaseConfiguration.mongodb2.uri")
 public class SecondaryDatabaseService {
 
     static final String ACCOUNT_NOT_FOUND_MSG = "No account with that number was found";

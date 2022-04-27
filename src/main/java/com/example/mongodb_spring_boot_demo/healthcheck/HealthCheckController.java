@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/healthCheck")
-@ConditionalOnProperty(value = "spring.mongodb2.uri")
+@ConditionalOnProperty(value = "databaseConfiguration.mongodb2.uri")
 public class HealthCheckController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HealthCheckController.class);

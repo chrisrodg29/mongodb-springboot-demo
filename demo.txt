@@ -1,14 +1,75 @@
 Demonstration:
-Show POJOs for Account and Customer.
-Show the requests in Postman.
-    * Make Caveat about FakerService
-Show MongoDBConfiguration and application.yml
-    * Explain Client url and settings
-Show AbstractDao
-Split to AccountsService and AccountsDao
-* Explain codec
-* Show 5 Account CRUD operations
-    (create, readAll, readByField, update, delete)
+
+Nature of our demo service:
+    Show POJOs for Account and Customer.
+    Show the requests in Postman.
+        * Make Caveat about FakerService
+
+Basic Configuration and service calls
+    Show MongoDBConfiguration and application.yml
+        * Exposing Client as a bean so that Spring Data MongoDB is aware of it
+            (so that it doesn't try to autoconfigure a connection)
+        * Exposing database so that we'll be able to use it in repositories
+        * Note, the properties used here are not specific. You can name them anything.
+            There are spring specific properties for MongoDB; these are not them.
+        * Also, note MongoDB credentials are included in the url
+    Show AccountsDao
+        This is for simple CRUD operations
+    Show AccountsService
+        For most CRUD operations, we don't have to do anything with the data except put
+        it in our API's response object.
+
+Handling normal repository calls
+    Show Generic Write and Read Responses.
+        In Mongo, we have read and write operations.
+        Anything that changes my database info is a write operation, and we just
+        have to return the success status of that operation.
+        Any read operation is going to have database documents that we want to view,
+        so the Generic Read Response objects have an extra field for data.
+        Usually, packaging our data and returning our statuses is all that is necessary.
+        However, when something goes wrong with a database call (the database goes down,
+        or we violate some restraint on the collection), we want to return useful information
+        to the user instead of just throwing a 500 error. To do that we need some exception
+        handling.
+    Show MongoExceptionHelper
+        So we only have to test a couple sets of try-catch statements instead of one for
+        every operation, I created these utility methods.
+
+Transformation Operations
+    Show AccountTransformationsDao and AccountTotalsSummary
+        This is for operations that transforms our main object into something else
+    * Alternate techniques need to be used anytime we transform the documents from our database.
+    Show CustomersDao.getCustomerWithAccountDetailById
+        This is a lookup operation, where I am making a call to one collection and joining that
+        data with data from another collection.
+
+Complications with using MongoDB
+    * No Cascading Deletes
+    Show AccountsService.deleteAllAccounts
+
+Alternate Tools and Configurations
+Secondary Configurations
+    Nothing complicated, just configure another set of client and database beans
+    If time allows, show SecondaryMongoDBConfiguration and SecondaryDatabaseDao
+Spring Data MongoDB
+    Spring Data MongoDB is for MongoDB what JPA is for relational databases.
+    It provides custom quick syntax for creating database queries.
+    However, I don't recommend it for most of our applications for numerous reasons:
+        * It requires extra configurations and annotations in your
+        application.
+            Show SpringDataMongoTemplateConfiguration
+            Show the @Document annotation commented out in Account
+            Show the @Id annotation in AccountTotalsSummary
+        * It requires in depth knowledge of the Spring Data syntax
+            Show SpringDataAccountsRepository
+                * getBy vs retrieveBy (keywords are important)
+                * Query annotation syntax (numbering and order are important)
+        * If you cannot create the method with Spring Data syntax,
+        you end up having to create an entirely different interface
+            Show CustomAccountsRepository and Impl
+        * CRUD repo methods cannot update single fields. You have to save an
+        entire object or write a custom query that updates a single field.
+
 
 
 Demo file order:
@@ -16,14 +77,22 @@ Account
 Customer
 MongoDBConfiguration
 application.yml
-AbstractDao
 AccountsDao
-
-
-
+AccountsService
+GenericWriteResponse
+GenericReadResponse
+MongoExceptionHelper
+AccountTransformationsDao
+AccountTotalsSummary
+CustomersDao
+SecondaryMongoDBConfiguration
+SecondaryDatabaseDao
+SpringDataMongoTemplateConfiguration
+SpringDataAccountsRepository
+CustomAccountsRepository
+CustomAccountsRepositoryImpl
 
 To-do:
-Need a validator call
 
 Email to work PC
 Convert to ADS Initializer project

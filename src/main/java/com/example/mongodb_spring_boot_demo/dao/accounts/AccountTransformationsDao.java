@@ -17,19 +17,28 @@ import java.util.List;
 import static com.mongodb.client.model.Aggregates.bucket;
 import static com.mongodb.client.model.Aggregates.group;
 
+/**
+ * Each method in this class transforms Account documents, returning the data
+ * in some other form.
+ */
 @Repository
-public class AccountsSummaryDao {
+public class AccountTransformationsDao {
 
     private static final String COLLECTION = "accounts";
     private final MongoDatabase db;
-    private final MongoCollection<AccountTotalsSummary> collectionWithAccountTotalsSummaryCodec;
+    private final MongoCollection<Document> collection;
 
-    public AccountsSummaryDao(MongoDatabase database) {
+    public AccountTransformationsDao(MongoDatabase database) {
         this.db = database;
-        collectionWithAccountTotalsSummaryCodec =
-                this.db.getCollection(COLLECTION, AccountTotalsSummary.class);
+        // Because the final POJO is going to be different for each method,
+        // we don't bother setting a default POJO class for the collection.
+        collection = this.db.getCollection(COLLECTION);
     }
 
+    /**
+     * This method aggregates Account documents into AccountTotalsSummary documents,
+     * and specifies the class to be found in the aggregation call.
+     */
     public List<AccountTotalsSummary> getAccountTotalsSummaryListV1() {
         List<Bson> aggregationPipeline = new ArrayList<>();
 
@@ -40,12 +49,16 @@ public class AccountsSummaryDao {
         );
         aggregationPipeline.add(groupStage);
 
-        return collectionWithAccountTotalsSummaryCodec.aggregate(aggregationPipeline)
+        return collection.aggregate(aggregationPipeline, AccountTotalsSummary.class)
                 .into(new ArrayList<>());
     }
 
+    /**
+     * This method makes the exact same call as getAccountTotalsSummaryListV1, but
+     * returns raw documents, leaving transformation to be done in the service layer.
+     * It includes print statements for examining the raw document structure.
+     */
     public List<Document> getAccountTotalsSummaryListV2() {
-        MongoCollection<Document> collectionWithoutCodec = db.getCollection(COLLECTION);
         List<Bson> aggregationPipeline = new ArrayList<>();
 
         Bson groupStage = group(
@@ -56,7 +69,7 @@ public class AccountsSummaryDao {
         aggregationPipeline.add(groupStage);
 
         List<Document> documentList =
-                collectionWithoutCodec.aggregate(aggregationPipeline).into(new ArrayList<>());
+                collection.aggregate(aggregationPipeline).into(new ArrayList<>());
         examineDocumentList(documentList);
         return documentList;
     }
@@ -70,6 +83,11 @@ public class AccountsSummaryDao {
         System.out.println(summary.get("balancesTotal").getClass());
     }
 
+    /**
+     * The returned documents from this method will not match our AccountBucket pojo.
+     * Transforming the documents at the service layer is the most efficient
+     * transformation available to us.
+     */
     public List<Document> getAccountBucketsByBoundaries(Integer[] boundaries) {
         MongoCollection<Document> collection =
                 db.getCollection(COLLECTION);

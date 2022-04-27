@@ -6,8 +6,9 @@ import com.mongodb.MongoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.function.Supplier;
+
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 public class MongoExceptionHelper {
 
@@ -20,17 +21,12 @@ public class MongoExceptionHelper {
     public static final String GENERIC_WRITE_ERROR = "An error occurred while trying to write to the database";
 
     public static <T> GenericReadResponse<T> safeRead(Supplier<T> readOperation,
-                                                      String noValuesFoundMessage) {
+                                                      String emptyResultMessage) {
         try {
             T retrievedValue = readOperation.get();
-            String operationSuccessStatus;
-            if (retrievedValue == null ||
-                    (retrievedValue instanceof List<?>
-                    && ((List<?>) retrievedValue).size() == 0)) {
-                operationSuccessStatus = noValuesFoundMessage;
-            } else {
-                operationSuccessStatus = SUCCESS;
-            }
+            String operationSuccessStatus = isEmpty(retrievedValue)
+                    ? emptyResultMessage
+                    : SUCCESS;
             return new GenericReadResponse<>(
                     operationSuccessStatus,
                     retrievedValue

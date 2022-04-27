@@ -9,7 +9,7 @@ import java.math.RoundingMode;
 public class AccountTotalsSummary {
 
     @Id // required by spring data
-    @BsonProperty("_id") // required for converting field name
+    @BsonProperty("_id") // required for converting field name to accountType
     private AccountType accountType;
     private int numberOfAccounts;
     private BigDecimal balancesTotal;

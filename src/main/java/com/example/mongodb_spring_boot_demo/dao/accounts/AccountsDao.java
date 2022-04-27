@@ -3,7 +3,6 @@ package com.example.mongodb_spring_boot_demo.dao.accounts;
 import com.example.mongodb_spring_boot_demo.api.accounts.GetTopKLargestAccountsV1Request;
 import com.example.mongodb_spring_boot_demo.model.accounts.Account;
 import com.example.mongodb_spring_boot_demo.model.accounts.AccountType;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Updates;
@@ -30,6 +29,8 @@ public class AccountsDao {
     private final MongoCollection<Account> accountsCollection;
 
     public AccountsDao(MongoDatabase database) {
+        // Because every method in this DAO returns an Account, we set Account
+        // as the default class for the collection.
         this.accountsCollection = database.getCollection(COLLECTION, Account.class);
     }
 
@@ -66,10 +67,9 @@ public class AccountsDao {
     }
 
     public ArrayList<Account> getAccountsByAccountType(AccountType accountType) {
-        FindIterable<Account> findIterable = accountsCollection.find(
+        return accountsCollection.find(
                 eq("accountType", accountType.name())
-        );
-        return findIterable.into(new ArrayList<>());
+        ).into(new ArrayList<>());
     }
 
     public ArrayList<Account> getTopKLargestAccounts(GetTopKLargestAccountsV1Request request) {

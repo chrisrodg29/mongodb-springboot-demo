@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@ConditionalOnProperty(value = "spring.mongodb2.uri")
+@ConditionalOnProperty(value = "databaseConfiguration.mongodb2.uri")
 @RequestMapping("api/secondaryDatabaseTest")
 public class SecondaryDatabaseController {
 

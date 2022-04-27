@@ -19,7 +19,7 @@ import java.util.List;
 import static com.mongodb.client.model.Filters.eq;
 
 @Repository
-@ConditionalOnProperty(value = "spring.mongodb2.uri")
+@ConditionalOnProperty(value = "databaseConfiguration.mongodb2.uri")
 public class SecondaryDatabaseDao {
 
     private static final String COLLECTION = "secondary_accounts";

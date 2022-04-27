@@ -18,12 +18,12 @@ import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 @Configuration
-@ConditionalOnProperty(value = "spring.mongodb2.uri")
+@ConditionalOnProperty(value = "databaseConfiguration.mongodb2.uri")
 public class SecondaryMongoDBConfiguration {
 
-    @Value("${spring.mongodb2.uri}")
+    @Value("${databaseConfiguration.mongodb2.uri}")
     private String mongoUri;
-    @Value("${spring.mongodb2.database}")
+    @Value("${databaseConfiguration.mongodb2.database}")
     private String databaseName;
 
     @Bean

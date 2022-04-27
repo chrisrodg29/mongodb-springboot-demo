@@ -5,7 +5,7 @@ import com.example.mongodb_spring_boot_demo.api.GenericWriteResponse;
 import com.example.mongodb_spring_boot_demo.api.accounts.GetTopKLargestAccountsV1Request;
 import com.example.mongodb_spring_boot_demo.api.accounts.UpdateAccountBalanceV1Request;
 import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsDao;
-import com.example.mongodb_spring_boot_demo.dao.accounts.AccountsSummaryDao;
+import com.example.mongodb_spring_boot_demo.dao.accounts.AccountTransformationsDao;
 import com.example.mongodb_spring_boot_demo.dao.customers.CustomersDao;
 import com.example.mongodb_spring_boot_demo.model.accounts.Account;
 import com.example.mongodb_spring_boot_demo.model.accounts.AccountBucket;
@@ -44,13 +44,13 @@ public class AccountsService {
 
     private final FakerService fakerService;
     private final AccountsDao accountsDao;
-    private final AccountsSummaryDao accountsSummaryDao;
+    private final AccountTransformationsDao accountTransformationsDao;
     private final CustomersDao customersDao;
 
-    public AccountsService(FakerService fakerService, AccountsDao accountsDao, AccountsSummaryDao accountsSummaryDao, CustomersDao customersService) {
+    public AccountsService(FakerService fakerService, AccountsDao accountsDao, AccountTransformationsDao accountTransformationsDao, CustomersDao customersService) {
         this.fakerService = fakerService;
         this.accountsDao = accountsDao;
-        this.accountsSummaryDao = accountsSummaryDao;
+        this.accountTransformationsDao = accountTransformationsDao;
         this.customersDao = customersService;
     }
 
@@ -132,13 +132,13 @@ public class AccountsService {
     }
 
     public GenericReadResponse<List<AccountTotalsSummary>> getAccountTotalsSummaryListV1() {
-        return safeRead(accountsSummaryDao::getAccountTotalsSummaryListV1);
+        return safeRead(accountTransformationsDao::getAccountTotalsSummaryListV1);
     }
 
     public GenericReadResponse<List<AccountTotalsSummary>> getAccountTotalsSummaryListV2() {
         List<Document> daoSummaryList;
         try {
-            daoSummaryList = accountsSummaryDao.getAccountTotalsSummaryListV2();
+            daoSummaryList = accountTransformationsDao.getAccountTotalsSummaryListV2();
         } catch (MongoException e) {
             LOGGER.error(GENERIC_READ_ERROR, e);
             return new GenericReadResponse<>(
@@ -173,7 +173,7 @@ public class AccountsService {
         Integer[] bucketBoundaries = new Integer[]{ 0, 200000, 400000, 600000, 800000, 1000000 };
         List<Document> daoBucketList;
         try {
-            daoBucketList = accountsSummaryDao.getAccountBucketsByBoundaries(bucketBoundaries);
+            daoBucketList = accountTransformationsDao.getAccountBucketsByBoundaries(bucketBoundaries);
         } catch (MongoException e) {
             LOGGER.error(GENERIC_READ_ERROR, e);
             return new GenericReadResponse<>(

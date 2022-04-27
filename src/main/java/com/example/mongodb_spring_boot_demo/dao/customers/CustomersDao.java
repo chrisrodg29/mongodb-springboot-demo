@@ -25,12 +25,10 @@ public class CustomersDao {
 
     private static final String COLLECTION = "customers";
 
-    private final MongoDatabase db;
     private final MongoCollection<Customer> customerCollection;
 
     public CustomersDao(MongoDatabase database) {
-        this.db = database;
-        this.customerCollection = this.db.getCollection(COLLECTION, Customer.class);
+        this.customerCollection = database.getCollection(COLLECTION, Customer.class);
     }
 
     public ArrayList<Customer> getAllCustomers() {
@@ -48,9 +46,6 @@ public class CustomersDao {
     }
 
     public CustomerWithAccountDetail getCustomerWithAccountDetailById(int customerId) {
-        MongoCollection<CustomerWithAccountDetail> customCollection =
-                db.getCollection(COLLECTION, CustomerWithAccountDetail.class);
-
         Bson match = Aggregates.match(eq("customerId", customerId));
         Bson lookup = Aggregates.lookup(
                 "accounts",
@@ -58,13 +53,11 @@ public class CustomersDao {
                 "accountNumber",
                 "accounts"
         );
-        Bson project = Aggregates.project(eq("accountNumbers", 0));
         List<Bson> aggregationPipeline = Arrays.asList(
                 match,
-                lookup,
-                project
+                lookup
         );
-        return customCollection.aggregate(aggregationPipeline).first();
+        return customerCollection.aggregate(aggregationPipeline, CustomerWithAccountDetail.class).first();
     }
 
     public boolean insertCustomers(List<Customer> customerList) {
