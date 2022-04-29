@@ -8,9 +8,11 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.mongodb_spring_boot_demo.MockConstants.MOCK_EXCEPTION_MESSAGE;
 import static com.example.mongodb_spring_boot_demo.util.MongoExceptionHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MongoExceptionHelperTest {
 
@@ -55,13 +57,14 @@ class MongoExceptionHelperTest {
     @Test
     void testSafeRead_MongoExceptionThrown() {
         MongoException e = mock(MongoException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         GenericReadResponse<Object> result = safeRead(() -> {
             throw e;
         });
 
         assertEquals(GENERIC_READ_ERROR, result.getOperationSuccessStatus());
         assertNull(result.getData());
-        assertEquals(e, result.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, result.getExceptionMessage());
     }
 
     @Test
@@ -76,24 +79,26 @@ class MongoExceptionHelperTest {
     @Test
     void testSafeWrite_WriteFailWithProvidedErrorMessage() {
         MongoException e = mock(MongoException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         String errorMessage = "my message";
         GenericWriteResponse result = safeWrite(() -> {
             throw e;
         }, errorMessage);
 
         assertEquals(errorMessage, result.getResponseText());
-        assertEquals(e, result.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, result.getExceptionMessage());
     }
 
     @Test
     void testSafeWrite_WriteFailWithNoProvidedErrorMessage() {
         MongoException e = mock(MongoException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         GenericWriteResponse result = safeWrite(() -> {
             throw e;
         });
 
         assertEquals(GENERIC_WRITE_ERROR, result.getResponseText());
-        assertEquals(e, result.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, result.getExceptionMessage());
     }
 
 }

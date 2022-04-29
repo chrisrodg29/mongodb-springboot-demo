@@ -46,7 +46,7 @@ public class CustomAccountsRepositoryImpl implements CustomAccountsRepository {
         );
         aggregationOperations.add(sort);
 
-        LimitOperation limit = Aggregation.limit(request.getNumber());
+        LimitOperation limit = Aggregation.limit(request.getK());
         aggregationOperations.add(limit);
 
         AggregationResults<Account> results = mongoTemplate.aggregate(

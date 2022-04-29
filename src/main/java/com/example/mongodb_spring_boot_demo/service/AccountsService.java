@@ -144,7 +144,7 @@ public class AccountsService {
             return new GenericReadResponse<>(
                     GENERIC_READ_ERROR,
                     null,
-                    e
+                    e.getMessage()
             );
         }
         List<AccountTotalsSummary> pojoSummaryList = convertDocumentsToAccountTypeSummaryList(daoSummaryList);
@@ -179,7 +179,7 @@ public class AccountsService {
             return new GenericReadResponse<>(
                     GENERIC_READ_ERROR,
                     null,
-                    e
+                    e.getMessage()
             );
         }
         List<AccountBucket> pojoBucketList = new ArrayList<>();
@@ -187,7 +187,7 @@ public class AccountsService {
         for (int i = 0; i < daoBucketList.size(); i++) {
             AccountBucket pojoBucket = new AccountBucket();
 
-            String balanceRange = bucketBoundaries[i] + "-" + (bucketBoundaries[i + 1]);
+            String balanceRange = "At least " + bucketBoundaries[i] + ", Less than " + (bucketBoundaries[i + 1]);
             pojoBucket.setBalanceRange(balanceRange);
 
             Integer numberOfAccounts = (Integer) daoBucketList.get(i).get("numberOfAccounts");

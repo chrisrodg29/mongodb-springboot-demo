@@ -1,0 +1,1159 @@
+{
+	"info": {
+		"_postman_id": "54fec7ff-68fe-46da-978d-55f9b9f9ca7e",
+		"name": "MongoDB Demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "AccountRequests",
+			"item": [
+				{
+					"name": "AddTenAccountsV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/addTenAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"addTenAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllAccountsV1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/getAllAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"getAllAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAccountByNumberV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": 95326021\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/getAccountByNumber/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"getAccountByNumber",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateAccountBalanceV1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": 16355894,\r\n    \"balance\": 45.42\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/updateAccountBalance/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"updateAccountBalance",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAccountByNumberV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": 42262468\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/deleteAccountByNumber/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"deleteAccountByNumber",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAllAccountsV1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/deleteAllAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"deleteAllAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAccountsByTypeV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountType\": \"SAVINGS\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/getAccountsByType/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"getAccountsByType",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetTopKLargestAccountsV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"k\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/getTopKLargestAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"getTopKLargestAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAccountTotalsSummaryListV1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/getAccountTotalsSummaryList/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"getAccountTotalsSummaryList",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAccountTotalsSummaryListV2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/getAccountTotalsSummaryList/V2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"getAccountTotalsSummaryList",
+								"V2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAccountBucketSummaryV1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/accounts/getAccountBucketSummary/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"accounts",
+								"getAccountBucketSummary",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CustomerRequests",
+			"item": [
+				{
+					"name": "AddTenCustomersV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/addTenCustomers/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"addTenCustomers",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllCustomersV1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/getAllCustomers/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"getAllCustomers",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetCustomerByIdV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerId\": 39477\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/getCustomerById/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"getCustomerById",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetCustomerWithAccountDetailV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerId\": 34758\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/getCustomerWithAccountDetail/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"getCustomerWithAccountDetail",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetCustomersByAccountNumberV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": 84529968\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/getCustomersByAccountNumber/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"getCustomersByAccountNumber",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReplaceCustomerV1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerId\": 38212,\r\n    \"firstName\": \"Victor\",\r\n    \"lastName\": \"Halvorson\",\r\n    \"phoneList\": [\r\n        {\r\n            \"phoneNumber\": \"1-214-218-1951 x513\",\r\n            \"usageType\": \"WORK\",\r\n            \"primary\": true\r\n        }\r\n    ],\r\n    \"addressList\": [\r\n        {\r\n            \"addressLine1\": \"30775 Timothy Drive\",\r\n            \"addressLine2\": null,\r\n            \"city\": \"Trompburgh\",\r\n            \"stateCode\": \"AZ\",\r\n            \"provinceCode\": null,\r\n            \"postalCode\": \"63055\",\r\n            \"countryCode\": \"US\"\r\n        }\r\n    ],\r\n    \"accountNumbers\": [\r\n        14084868,\r\n        84529968\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/replaceCustomer/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"replaceCustomer",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LinkAccountToCustomerV1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerId\": 39477,\r\n    \"accountNumber\": 46424273\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/linkAccountToCustomer/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"linkAccountToCustomer",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RemoveAccountFromCustomerV1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerId\": 38212,\r\n    \"accountNumber\": 84529968\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/removeAccountFromCustomer/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"removeAccountFromCustomer",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RemoveAccountFromAllCustomersV1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": 84529968\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/removeAccountFromAllCustomers/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"removeAccountFromAllCustomers",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteCustomerByIdV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerId\": 30217\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/deleteCustomerById/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"deleteCustomerById",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAllCustomersV1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/customers/deleteAllCustomers/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"customers",
+								"deleteAllCustomers",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SpringData",
+			"item": [
+				{
+					"name": "SDAddTenAccountsV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/springdata/accounts/addTenAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"springdata",
+								"accounts",
+								"addTenAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SDGetAllAccountsV1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/springdata/accounts/getAllAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"springdata",
+								"accounts",
+								"getAllAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SDGetAccountByNumberV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": 95326021\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/springdata/accounts/getAccountByNumber/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"springdata",
+								"accounts",
+								"getAccountByNumber",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SDUpdateAccountBalanceV1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": 95326021,\r\n    \"balance\": 45.42\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/springdata/accounts/updateAccountBalance/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"springdata",
+								"accounts",
+								"updateAccountBalance",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SDDeleteAccountByNumberV1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": 95326021\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/springdata/accounts/deleteAccountByNumber/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"springdata",
+								"accounts",
+								"deleteAccountByNumber",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SDDeleteAllAccountsV1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/springdata/accounts/deleteAllAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"springdata",
+								"accounts",
+								"deleteAllAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SDGetAccountsByTypeV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountType\": \"SAVINGS\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/springdata/accounts/getAccountsByType/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"springdata",
+								"accounts",
+								"getAccountsByType",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SDGetTopKLargestAccountsV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"k\": 5,\r\n    \"accountType\": \"SAVINGS\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/springdata/accounts/getTopKLargestAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"springdata",
+								"accounts",
+								"getTopKLargestAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SDGetAccountTotalsSummaryListV1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/springdata/accounts/getAccountTotalsSummaryList/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"springdata",
+								"accounts",
+								"getAccountTotalsSummaryList",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SDGetAccountBucketSummaryV1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/springdata/accounts/getAccountBucketSummary/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"springdata",
+								"accounts",
+								"getAccountBucketSummary",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SecondaryDatabaseTest",
+			"item": [
+				{
+					"name": "SecondaryDatabase AddTenAccountsV1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/secondaryDatabaseTest/addTenAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"secondaryDatabaseTest",
+								"addTenAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SecondaryDatabase GetAllAccountsV1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/secondaryDatabaseTest/getAllAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"secondaryDatabaseTest",
+								"getAllAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "HealthCheck",
+			"item": [
+				{
+					"name": "PerformHealthCheckV1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/secondaryDatabaseTest/getAllAccounts/V1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"secondaryDatabaseTest",
+								"getAllAccounts",
+								"V1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

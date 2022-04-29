@@ -83,7 +83,7 @@ public class AccountsDao {
         Bson sortStage = sort(descending("balance"));
         aggregationPipeline.add(sortStage);
 
-        Bson limitStage = limit(request.getNumber());
+        Bson limitStage = limit(request.getK());
         aggregationPipeline.add(limitStage);
 
         return accountsCollection.aggregate(aggregationPipeline).into(new ArrayList<>());

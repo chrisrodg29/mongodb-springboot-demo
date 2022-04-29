@@ -33,6 +33,8 @@ public class CustomersService {
     static final String ACCOUNT_REMOVED_FROM_ONE_MSG = "Account removed from customer";
     static final String ACCOUNT_REMOVED_FROM_ALL_MSG = "Account removed from all customers";
     static final String ERROR_REMOVING_ACCOUNT_MSG = "Error removing account";
+    static final String CUSTOMER_DELETED_MSG = "Customer was deleted";
+    static final String ERROR_DELETING_CUSTOMER_MSG = "Error deleting customer";
     static final String ALL_CUSTOMERS_DELETED_MSG = "All customers deleted";
     static final String ERROR_DELETING_CUSTOMERS_MSG = "Error deleting customers";
 
@@ -108,10 +110,10 @@ public class CustomersService {
         GenericReadResponse<Account> readResponse = safeRead(
                 () -> accountsDao.getAccountByAccountNumber(request.getAccountNumber())
         );
-        if (readResponse.getException() != null) {
+        if (readResponse.getExceptionMessage() != null) {
             return new GenericWriteResponse(
                     GENERIC_WRITE_ERROR,
-                    readResponse.getException()
+                    readResponse.getExceptionMessage()
             );
         } else if (readResponse.getData() == null) {
             return new GenericWriteResponse(NO_ACCOUNT_FOUND_MSG);
@@ -150,6 +152,17 @@ public class CustomersService {
             customersDao.removeAccountFromAllCustomers(accountNumber);
             return ACCOUNT_REMOVED_FROM_ALL_MSG;
         }, ERROR_REMOVING_ACCOUNT_MSG);
+    }
+
+    public GenericWriteResponse deleteCustomerById(int customerId) {
+        return safeWrite(() -> {
+            boolean deleted = customersDao.deleteCustomerById(customerId);
+            if (deleted) {
+                return CUSTOMER_DELETED_MSG;
+            } else {
+                return NO_CUSTOMER_FOUND_MSG;
+            }
+        }, ERROR_DELETING_CUSTOMER_MSG);
     }
 
     public GenericWriteResponse deleteAllCustomers() {

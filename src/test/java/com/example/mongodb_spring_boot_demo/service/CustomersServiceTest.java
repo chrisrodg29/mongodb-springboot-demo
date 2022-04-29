@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.mongodb_spring_boot_demo.MockConstants.MOCK_EXCEPTION_MESSAGE;
 import static com.example.mongodb_spring_boot_demo.service.CustomersService.*;
 import static com.example.mongodb_spring_boot_demo.util.MongoExceptionHelper.GENERIC_WRITE_ERROR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -97,6 +98,7 @@ class CustomersServiceTest {
     void testInsertTenCustomers_ExceptionOnAccountInsert() {
         List<Account> accountList = stubFakerServiceGetNewAccounts();
         MongoWriteException e = mock(MongoWriteException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         when(accountsDao.insertAccounts(accountList)).thenThrow(e);
 
         GenericWriteResponse response = customersService.insertTenCustomers();
@@ -105,7 +107,7 @@ class CustomersServiceTest {
                 ERROR_INSERTING_ACCOUNTS_MSG,
                 response.getResponseText()
         );
-        assertEquals(e, response.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, response.getExceptionMessage());
     }
 
     @Test
@@ -113,12 +115,13 @@ class CustomersServiceTest {
         stubFakerServiceGetNewAccounts();
         stubGetNewCustomer();
         MongoWriteException e = mock(MongoWriteException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         doThrow(e).when(customersDao).insertCustomers(any());
 
         GenericWriteResponse response = customersService.insertTenCustomers();
 
         assertEquals(ERROR_INSERTING_CUSTOMERS_MSG, response.getResponseText());
-        assertEquals(e, response.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, response.getExceptionMessage());
     }
 
     @Test
@@ -180,13 +183,14 @@ class CustomersServiceTest {
         request.setCustomerId(1);
         request.setAccountNumber(2);
         MongoException e = mock(MongoException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         when(accountsDao.getAccountByAccountNumber(request.getAccountNumber()))
                 .thenThrow(e);
 
         GenericWriteResponse response = customersService.linkAccountToCustomer(request);
 
         assertEquals(GENERIC_WRITE_ERROR, response.getResponseText());
-        assertEquals(e, response.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, response.getExceptionMessage());
     }
 
     @Test
@@ -231,12 +235,13 @@ class CustomersServiceTest {
         when(accountsDao.getAccountByAccountNumber(request.getAccountNumber()))
                 .thenReturn(new Account());
         MongoWriteException e = mock(MongoWriteException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         doThrow(e).when(customersDao).addAccountNumberToCustomer(anyInt(), anyInt());
 
         GenericWriteResponse response = customersService.linkAccountToCustomer(request);
 
         assertEquals(ERROR_LINKING_ACCOUNT_MSG, response.getResponseText());
-        assertEquals(e, response.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, response.getExceptionMessage());
     }
 
     @Test
@@ -293,6 +298,26 @@ class CustomersServiceTest {
         GenericWriteResponse response = customersService.removeAccountFromCustomer(request);
 
         assertEquals(ACCOUNT_REMOVED_FROM_ONE_MSG, response.getResponseText());
+    }
+
+    @Test
+    void testDeleteCustomerById_Success() {
+        int customerId = 1;
+        when(customersDao.deleteCustomerById(customerId)).thenReturn(true);
+
+        GenericWriteResponse response = customersService.deleteCustomerById(customerId);
+
+        assertEquals(CUSTOMER_DELETED_MSG, response.getResponseText());
+    }
+
+    @Test
+    void testDeleteCustomerById_NoCustomerFound() {
+        int customerId = 1;
+        when(customersDao.deleteCustomerById(customerId)).thenReturn(false);
+
+        GenericWriteResponse response = customersService.deleteCustomerById(customerId);
+
+        assertEquals(NO_CUSTOMER_FOUND_MSG, response.getResponseText());
     }
 
 }

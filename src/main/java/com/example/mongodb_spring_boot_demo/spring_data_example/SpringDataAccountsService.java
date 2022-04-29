@@ -119,7 +119,7 @@ public class SpringDataAccountsService {
             return new GenericReadResponse<>(
                     GENERIC_READ_ERROR,
                     null,
-                    e
+                    e.getMessage()
             );
         }
         List<AccountBucket> pojoBucketList = new ArrayList<>();

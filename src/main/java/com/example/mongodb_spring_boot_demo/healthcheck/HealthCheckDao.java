@@ -9,13 +9,15 @@ import org.springframework.stereotype.Repository;
 @ConditionalOnProperty(value = "databaseConfiguration.mongodb2.uri")
 public class HealthCheckDao {
 
+    public static final Document HEALTH_CHECK_COMMAND = new Document("dbStats", 1);
+
     private final MongoDatabase database2;
 
     public HealthCheckDao(MongoDatabase database2) {
         this.database2 = database2;
     }
 
-    public void performHealthCheck() {
-        database2.runCommand(new Document("dbStats", 1));
+    public Document performHealthCheck() {
+        return database2.runCommand(HEALTH_CHECK_COMMAND);
     }
 }

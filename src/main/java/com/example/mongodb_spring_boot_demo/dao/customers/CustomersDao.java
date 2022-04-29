@@ -97,6 +97,12 @@ public class CustomersDao {
         return result.wasAcknowledged();
     }
 
+    public boolean deleteCustomerById(int customerId) {
+        Bson query = eq("customerId", customerId);
+        DeleteResult deleteResult = customerCollection.deleteOne(query);
+        return deleteResult.getDeletedCount() == 1;
+    }
+
     public boolean deleteAllCustomers() {
         DeleteResult deleteResult = customerCollection.deleteMany(new Document());
         return deleteResult.wasAcknowledged();

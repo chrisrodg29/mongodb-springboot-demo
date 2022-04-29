@@ -27,7 +27,7 @@ public class SecondaryDatabaseController {
         return accountsService.getAllAccounts();
     }
 
-    @GetMapping("getAccountByNumber/V1")
+    @PostMapping("getAccountByNumber/V1")
     public GenericReadResponse<Account> getAccountByNumberV1(@RequestBody GetAccountByNumberV1Request request) {
         return accountsService.getAccountByNumber(request.getAccountNumber());
     }

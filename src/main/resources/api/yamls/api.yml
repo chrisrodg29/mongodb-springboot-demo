@@ -1,0 +1,677 @@
+openapi: 3.0.2
+info:
+  title: "MongoDB Demo"
+  description: "Run various calls to retrieve account and customer information from MongoDB."
+  version: "1.0"
+
+servers:
+- url: http://localhost:8080/api
+
+paths:
+
+  # ACCOUNTS #
+  /accounts/getAllAccounts/V1:
+    get:
+      summary: Get all accounts
+      operationId: getAllAccounts/V1
+      tags: [Accounts]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountListResponse"
+  
+  /accounts/getAccountByNumber/V1:
+    post:
+      summary: Get account by the provided accountNumber
+      operationId: getAccountByNumber/V1
+      tags: [Accounts]
+      requestBody:
+        $ref: "#/components/requestBodies/GetAccountByNumberV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountResponse"
+  
+  /accounts/getAccountsByType/V1:
+    post:
+      summary: Get all accounts of the specified type
+      operationId: getAccountsByType/V1
+      tags: [Accounts]
+      requestBody:
+        $ref: "#/components/requestBodies/GetAccountsByTypeV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountListResponse"
+  
+  /accounts/getTopKLargestAccounts/V1:
+    post:
+      summary: Get a top-k sort of accounts
+      description: If a account type is specified, get a top-k sort of accounts
+        of that type. If an account type is not specified, get a top-k sort of all accounts
+      operationId: getTopKLargestAccounts/V1
+      tags: [Accounts]
+      requestBody:
+        $ref: "#/components/requestBodies/GetTopKLargestAccountsV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountListResponse"
+  
+  /accounts/getAccountTotalsSummaryList/V1:
+    get:
+      summary: Get a summary of balances and number of accounts for each account type
+      operationId: getAccountTotalsSummaryList/V1
+      tags: [Accounts]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountTotalsSummaryListResponse"
+  
+  /accounts/getAccountTotalsSummaryList/V2:
+    get:
+      summary: Get a summary of balances and number of accounts for each account type
+      description: Does the same thing as V1 of this operation, but is implemented differently
+        in the backend to show different ways of handling MongoDB problems
+      operationId: getAccountTotalsSummaryList/V2
+      tags: [Accounts]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountTotalsSummaryListResponse"
+  
+  /accounts/getAccountBucketSummary/V1:
+    get:
+      summary: Get a list displaying number of accounts by balance range
+      description: Returns a list displaying number of accounts by balance range of 200,000 dollar increments
+      operationId: getAccountBucketSummary/V2
+      tags: [Accounts]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountBucketListResponse"
+
+  /accounts/addTenAccounts/V1:
+    post:
+      summary: Add ten randomly generated accounts
+      operationId: addTenAccounts/V1
+      tags: [Accounts]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"
+  
+  /accounts/updateAccountBalance/V1:
+    put:
+      summary: Update account balance
+      description: Updates the balance of the account with the provided number
+      operationId: updateAccountBalance/V1
+      tags: [Accounts]
+      requestBody:
+        $ref: "#/components/requestBodies/GetAccountsByTypeV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"
+  
+  /accounts/deleteAccountByNumber/V1:
+    post:
+      summary: Delete account by number
+      description: This operation makes two calls. The first deletes the
+        account from the accounts collection. The second checks all documents
+        in the customers collection, removing the account number from the
+        customer's account number list if it exists.
+      operationId: deleteAccountByNumber/V1
+      tags: [Accounts]
+      requestBody:
+        $ref: "#/components/requestBodies/DeleteAccountByNumberRequestV1"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"
+  
+  /accounts/deleteAllAccounts/V1:
+    delete:
+      summary: Deletes all accounts in collection
+      description: This operation makes two calls. The first deletes all
+        accounts from the accounts collection. The second empties the account
+        numbers list of each customer in the customers collection.
+      operationId: deleteAllAccounts/V1
+      tags: [Accounts]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"
+                
+    # CUSTOMERS #
+  /customers/getAllCustomers/V1:
+    get:
+      summary: Get all customers
+      operationId: getAllCustomers/V1
+      tags: [Customers]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerListResponse"
+  
+  /customers/getCustomerById/V1:
+    post:
+      summary: Get customer by the provided customerId
+      operationId: getCustomerById/V1
+      tags: [Customers]
+      requestBody:
+        $ref: "#/components/requestBodies/GetCustomerByIdV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerResponse"
+  
+  /customers/getCustomerWithAccountDetail/V1:
+    post:
+      summary: Get customer with detailed account information
+      description: This operation demonstrates an aggregation call with a lookup. Instead of just
+        returning the customer by id, a lookup call is used to replace each of the customer's account
+        numbers with the associated account document.
+      operationId: getCustomerWithAccountDetail/V1
+      tags: [Customers]
+      requestBody:
+        $ref: "#/components/requestBodies/GetCustomerWithAccountDetailV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerWithAccountDetailResponse"
+  
+  /customers/getCustomersByAccountNumber/V1:
+    post:
+      summary: Get a list of customers who own the provided account number
+      description: This operation returns a list of any customers whose account numbers
+        array includes the provided account number.
+      operationId: getCustomersByAccountNumber/V1
+      tags: [Customers]
+      requestBody:
+        $ref: "#/components/requestBodies/GetCustomersByAccountNumberV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerListResponse"
+
+  /customers/addTenCustomers/V1:
+    post:
+      summary: Add ten generated customers with new accounts
+      description: The operation makes two calls, one to insert ten randomnly
+        generated accounts to the accounts collection, the other to randomnly
+        generate customers, each linked to an account, and insert them into
+        the customers collection
+      operationId: addTenCustomers/V1
+      tags: [Customers]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"
+  
+  /customers/replaceCustomer/V1:
+    put:
+      summary: Update all customer information for the provided customerId
+      description: The operation looks for a customer with the customerId from
+        the request body and replaces all other information with the
+        information in the request body. If the customerId does not already
+        exist, no changes occur.
+      operationId: replaceCustomer/V1
+      tags: [Customers]
+      requestBody:
+        $ref: "#/components/requestBodies/ReplaceCustomerV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"
+  
+  /customers/linkAccountToCustomer/V1:
+    put:
+      summary: Adds the account number provided to the customer selected
+      description: The operation makes two database calls. The first call verifies
+        that the account number provided exists in the accounts collection.
+        The second updates the document for customer with the provided customerId,
+        adding the account number to that customer's array of account numbers.
+      operationId: linkAccountToCustomer/V1
+      tags: [Customers]
+      requestBody:
+        $ref: "#/components/requestBodies/LinkAccountToCustomerV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"
+  
+  /customers/removeAccountFromCustomer/V1:
+    put:
+      summary: Removes the account number provided from the customer selected
+      description: The operation removes the account number from the account numbers
+        list of the identified customer. It notifies the client when the operation
+        is successful, as well as notifying if the customer was not found or the
+        account number was not included in the list to begin with.
+      operationId: removeAccountFromCustomer/V1
+      tags: [Customers]
+      requestBody:
+        $ref: "#/components/requestBodies/RemoveAccountFromCustomerV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"
+  
+  /customers/removeAccountFromAllCustomers/V1:
+    put:
+      summary: Adds the account number provided to the customer selected
+      description: The operation checks each customer in the collection, removing
+        the provided account number from the customer's account numbers list if it exists.
+      operationId: removeAccountFromAllCustomers/V1
+      tags: [Customers]
+      requestBody:
+        $ref: "#/components/requestBodies/RemoveAccountFromAllCustomersV1Request"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"
+  
+  /customers/deleteCustomerById/V1:
+    post:
+      summary: Delete account by number
+      operationId: deleteCustomerById/V1
+      tags: [Customers]
+      requestBody:
+        $ref: "#/components/requestBodies/DeleteAccountByNumberRequestV1"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"
+  
+  /customers/deleteAllCustomers/V1:
+    delete:
+      summary: Deletes all customers in collection
+      operationId: deleteAllCustomers/V1
+      tags: [Customers]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericWriteResponse"  
+                  
+
+components:
+  requestBodies:
+  
+    # ACCOUNTS #
+    GetAccountByNumberV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              accountNumber:
+                type: integer
+                
+    GetAccountsByTypeV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              accountType:
+                $ref: "#/components/schemas/AccountType"
+                
+    GetTopKLargestAccountsV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              k:
+                type: integer
+              accountType:
+                $ref: "#/components/schemas/AccountType"
+                
+    UpdateAccountBalanceV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              accountNumber:
+                type: integer
+              balance:
+                type: number
+                format: double
+                
+    DeleteAccountByNumberRequestV1:
+      content:
+        application/json:
+          schema:
+            properties:
+              accountNumber:
+                type: integer
+    
+    # CUSTOMERS #
+    GetCustomerByIdV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              customerId:
+                type: integer
+    
+    GetCustomerWithAccountDetailV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              customerId:
+                type: integer
+    
+    GetCustomersByAccountNumberV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              customerId:
+                type: integer
+                
+    ReplaceCustomerV1Request:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Customer"
+            
+    LinkAccountToCustomerV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              customerId:
+                type: integer
+              accountNumber:
+                type: integer
+            
+    RemoveAccountFromCustomerV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              customerId:
+                type: integer
+              accountNumber:
+                type: integer
+            
+    RemoveAccountFromAllCustomersV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              accountNumber:
+                type: integer
+    
+    DeleteCustomerByIdV1Request:
+      content:
+        application/json:
+          schema:
+            properties:
+              customerId:
+                type: integer
+    
+    
+                
+  schemas:
+  
+    # RESPONSE OBJECTS #
+    GenericWriteResponse:
+      type: object
+      properties:
+        operationSuccessStatus:
+          type: string
+        exception:
+          type: object
+  
+    GenericReadResponse:
+      type: object
+      properties:
+        operationSuccessStatus:
+          type: string
+        data:
+          type: object
+        exception:
+          type: object
+    
+    AccountResponse:
+      allOf:
+        - $ref: "#/components/schemas/GenericReadResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/Account"
+        
+    AccountListResponse:
+      allOf:
+        - $ref: "#/components/schemas/GenericReadResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Account"
+        
+    AccountTotalsSummaryListResponse:
+      allOf:
+        - $ref: "#/components/schemas/GenericReadResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/AccountTotalsSummary"
+        
+    AccountBucketListResponse:
+      allOf:
+        - $ref: "#/components/schemas/GenericReadResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/AccountBucket"
+    
+    CustomerResponse:
+      allOf:
+        - $ref: "#/components/schemas/GenericReadResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/Customer"
+        
+    CustomerListResponse:
+      allOf:
+        - $ref: "#/components/schemas/GenericReadResponse"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Customer"
+        
+    CustomerWithAccountDetailResponse:
+      allOf:
+        - $ref: "#/components/schemas/GenericReadResponse"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/CustomerWithAccountDetail"
+    
+    
+    # DTOs #
+    Account:
+      type: object
+      properties:
+        accountNumber:
+          type: integer
+        accountType:
+          $ref: "#/components/schemas/AccountType"
+        balance:
+          type: number
+          format: double
+          
+    AccountType:
+      type: string
+      enum: [CHECKING, SAVINGS]
+    
+    AccountTotalsSummary:
+      type: object
+      properties:
+        accountType:
+          $ref: "#/components/schemas/AccountType"
+        numberOfAccounts:
+          type: integer
+        balancesTotal:
+          type: number
+          format: double
+      
+    AccountBucket:
+      type: object
+      properties:
+        balanceRange:
+          type: string
+        numberOfAccounts:
+          type: integer
+    
+    Customer:
+      type: object
+      properties:
+        customerId:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phoneList:
+          type: array
+          items:
+            $ref: "#/components/schemas/Phone"
+        addressList:
+          type: array
+          items:
+            $ref: "#/components/schemas/Address"
+        accountNumbers:
+          type: array
+          items:
+            type: integer
+    
+    CustomerWithAccountDetail:
+      type: object
+      properties:
+        customerId:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phoneList:
+          type: array
+          items:
+            $ref: "#/components/schemas/Phone"
+        addressList:
+          type: array
+          items:
+            $ref: "#/components/schemas/Address"
+        accounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Account"
+    
+    Phone:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+        phoneUsageType:
+          $ref: "#/components/schemas/PhoneUsageType"
+        isPrimary:
+          type: boolean
+    
+    PhoneUsageType:
+      type: string
+      enum: [HOME, WORK, CELL]
+      
+    Address:
+      type: object
+      properties:
+        addressLine1:
+            type: string
+        addressLine2:
+            type: string
+        city:
+            type: string
+        stateCode:
+            type: string
+        provinceCode:
+            type: string
+        postalCode:
+            type: string
+        countryCode:
+            type: string
+    

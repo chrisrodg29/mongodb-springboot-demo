@@ -36,7 +36,7 @@ public class MongoExceptionHelper {
             return new GenericReadResponse<>(
                     GENERIC_READ_ERROR,
                     null,
-                    e
+                    e.getMessage()
             );
         }
     }
@@ -52,7 +52,7 @@ public class MongoExceptionHelper {
             return new GenericWriteResponse(result);
         } catch (MongoException e) {
             LOGGER.error(errorMessage, e);
-            return new GenericWriteResponse(errorMessage, e);
+            return new GenericWriteResponse(errorMessage, e.getMessage());
         }
     }
 

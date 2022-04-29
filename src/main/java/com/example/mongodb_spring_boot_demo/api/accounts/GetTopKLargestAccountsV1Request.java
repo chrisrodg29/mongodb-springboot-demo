@@ -4,20 +4,20 @@ import com.example.mongodb_spring_boot_demo.model.accounts.AccountType;
 
 public class GetTopKLargestAccountsV1Request {
 
-    private int number;
+    private int k;
     private AccountType accountType;
 
-    public GetTopKLargestAccountsV1Request(int number, AccountType accountType) {
-        this.number = number;
+    public GetTopKLargestAccountsV1Request(int k, AccountType accountType) {
+        this.k = k;
         this.accountType = accountType;
     }
 
-    public int getNumber() {
-        return number;
+    public int getK() {
+        return k;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setK(int k) {
+        this.k = k;
     }
 
     public AccountType getAccountType() {
@@ -31,7 +31,7 @@ public class GetTopKLargestAccountsV1Request {
     @Override
     public String toString() {
         return "GetTopKLargestAccountsV1Request{" +
-                "number=" + number +
+                "number=" + k +
                 ", accountType=" + accountType +
                 '}';
     }

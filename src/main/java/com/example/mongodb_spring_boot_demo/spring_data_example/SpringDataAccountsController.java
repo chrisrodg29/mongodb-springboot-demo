@@ -25,7 +25,7 @@ public class SpringDataAccountsController {
         return accountsService.getAllAccounts();
     }
 
-    @GetMapping("getAccountByNumber/V1")
+    @PostMapping("getAccountByNumber/V1")
     public GenericReadResponse<Account> getAccountByNumberV1(@RequestBody GetAccountByNumberV1Request request) {
         return accountsService.getAccountByNumber(request.getAccountNumber());
     }
@@ -50,12 +50,12 @@ public class SpringDataAccountsController {
         return accountsService.deleteAllAccounts();
     }
 
-    @GetMapping("getAccountsByType/V1")
+    @PostMapping("getAccountsByType/V1")
     public GenericReadResponse<List<Account>> getAccountByTypeV1(@RequestBody GetAccountsByTypeV1Request request) {
         return accountsService.getAccountByType(request.getAccountType());
     }
 
-    @GetMapping("getTopKLargestAccounts/V1")
+    @PostMapping("getTopKLargestAccounts/V1")
     public GenericReadResponse<List<Account>> getTopKLargestAccountsV1(@RequestBody GetTopKLargestAccountsV1Request request) {
         return accountsService.getTopKLargestAccounts(request);
     }

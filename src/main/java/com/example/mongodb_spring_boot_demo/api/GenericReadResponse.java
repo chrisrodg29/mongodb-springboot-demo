@@ -4,7 +4,7 @@ public class GenericReadResponse<T> {
 
     private String operationSuccessStatus;
     private T data;
-    private Exception exception;
+    private String exceptionMessage;
 
     public GenericReadResponse() {}
 
@@ -13,9 +13,9 @@ public class GenericReadResponse<T> {
         this.data = data;
     }
 
-    public GenericReadResponse(String operationSuccessStatus, T data, Exception exception) {
+    public GenericReadResponse(String operationSuccessStatus, T data, String exceptionMessage) {
         this(operationSuccessStatus, data);
-        this.exception = exception;
+        this.exceptionMessage = exceptionMessage;
     }
 
     public String getOperationSuccessStatus() {
@@ -34,12 +34,12 @@ public class GenericReadResponse<T> {
         this.data = data;
     }
 
-    public Exception getException() {
-        return exception;
+    public String getExceptionMessage() {
+        return exceptionMessage;
     }
 
-    public void setException(Exception exception) {
-        this.exception = exception;
+    public void setExceptionMessage(String exceptionMessage) {
+        this.exceptionMessage = exceptionMessage;
     }
 
 }

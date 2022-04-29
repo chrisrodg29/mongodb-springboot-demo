@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.mongodb_spring_boot_demo.MockConstants.MOCK_EXCEPTION_MESSAGE;
 import static com.example.mongodb_spring_boot_demo.service.AccountsService.*;
 import static com.example.mongodb_spring_boot_demo.util.MongoExceptionHelper.SUCCESS;
 import static com.mongodb.assertions.Assertions.assertNull;
@@ -86,12 +87,13 @@ class AccountsServiceTest {
     @Test
     void testInsertTenAccounts_AccountInsertException() {
         MongoWriteException e = mock(MongoWriteException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         when(accountsDao.insertAccounts(any())).thenThrow(e);
 
         GenericWriteResponse response = accountsService.insertTenAccounts();
 
         assertEquals(ERROR_INSERTING_ACCOUNTS_MSG, response.getResponseText());
-        assertEquals(e, response.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, response.getExceptionMessage());
     }
 
     @Test
@@ -143,13 +145,14 @@ class AccountsServiceTest {
     void testUpdateAccountBalanceV1_Exception() {
         UpdateAccountBalanceV1Request request = createUpdateAccountBalanceRequest();
         MongoWriteException e = mock(MongoWriteException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         when(accountsDao.updateBalanceByAccountNumber(request.getAccountNumber(), request.getBalance()))
                 .thenThrow(e);
 
         GenericWriteResponse response = accountsService.updateAccountBalanceV1(request);
 
         assertEquals(ERROR_UPDATING_ACCOUNT_MSG, response.getResponseText());
-        assertEquals(e, response.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, response.getExceptionMessage());
     }
 
     @Test
@@ -188,12 +191,13 @@ class AccountsServiceTest {
     void testDeleteAccountByNumber_Exception() {
         int accountNumber = 1;
         MongoWriteException e = mock(MongoWriteException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         when(accountsDao.deleteAccountByAccountNumber(accountNumber)).thenThrow(e);
 
         GenericWriteResponse response = accountsService.deleteAccountByNumber(accountNumber);
 
         assertEquals(ERROR_DELETING_AN_ACCOUNT_MSG, response.getResponseText());
-        assertEquals(e, response.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, response.getExceptionMessage());
     }
 
     @Test
@@ -205,12 +209,13 @@ class AccountsServiceTest {
     @Test
     void testDeleteAllAccounts_Exception() {
         MongoWriteException e = mock(MongoWriteException.class);
+        when(e.getMessage()).thenReturn(MOCK_EXCEPTION_MESSAGE);
         when(accountsDao.deleteAllAccounts()).thenThrow(e);
 
         GenericWriteResponse response = accountsService.deleteAllAccounts();
 
         assertEquals(ERROR_DELETING_ACCOUNTS_MSG, response.getResponseText());
-        assertEquals(e, response.getException());
+        assertEquals(MOCK_EXCEPTION_MESSAGE, response.getExceptionMessage());
     }
 
     @Test
@@ -256,11 +261,11 @@ class AccountsServiceTest {
 
         List<AccountBucket> pojoBucketList = response.getData();
         String[] expectedBucketRanges = {
-                "0-200000",
-                "200000-400000",
-                "400000-600000",
-                "600000-800000",
-                "800000-1000000"
+                "At least 0, Less than 200000",
+                "At least 200000, Less than 400000",
+                "At least 400000, Less than 600000",
+                "At least 600000, Less than 800000",
+                "At least 800000, Less than 1000000",
         };
         int count = 0;
         while (count < 5) {

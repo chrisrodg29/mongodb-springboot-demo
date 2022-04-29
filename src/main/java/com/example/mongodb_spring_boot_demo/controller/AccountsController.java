@@ -26,7 +26,7 @@ public class AccountsController {
         return accountsService.getAllAccounts();
     }
 
-    @GetMapping("getAccountByNumber/V1")
+    @PostMapping("getAccountByNumber/V1")
     public GenericReadResponse<Account> getAccountByNumberV1(@RequestBody GetAccountByNumberV1Request request) {
         return accountsService.getAccountByNumber(request.getAccountNumber());
     }
@@ -41,7 +41,7 @@ public class AccountsController {
         return accountsService.updateAccountBalanceV1(request);
     }
 
-    @DeleteMapping("deleteAccountByNumber/V1")
+    @PostMapping("deleteAccountByNumber/V1")
     public GenericWriteResponse deleteAccountByNumberV1(@RequestBody DeleteAccountByNumberRequestV1 request) {
         return accountsService.deleteAccountByNumber(request.getAccountNumber());
     }
@@ -51,12 +51,12 @@ public class AccountsController {
         return accountsService.deleteAllAccounts();
     }
 
-    @GetMapping("getAccountsByType/V1")
+    @PostMapping("getAccountsByType/V1")
     public GenericReadResponse<List<Account>> getAccountByTypeV1(@RequestBody GetAccountsByTypeV1Request request) {
         return accountsService.getAccountsByType(request.getAccountType());
     }
 
-    @GetMapping("getTopKLargestAccounts/V1")
+    @PostMapping("getTopKLargestAccounts/V1")
     public GenericReadResponse<List<Account>> getTopKLargestAccountsV1(@RequestBody GetTopKLargestAccountsV1Request request) {
         return accountsService.getTopKLargestAccounts(request);
     }

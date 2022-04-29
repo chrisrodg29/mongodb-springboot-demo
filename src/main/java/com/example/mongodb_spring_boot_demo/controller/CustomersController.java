@@ -25,17 +25,17 @@ public class CustomersController {
         return customersService.getAllCustomers();
     }
 
-    @GetMapping("getCustomerById/V1")
+    @PostMapping("getCustomerById/V1")
     public GenericReadResponse<Customer> getCustomerById(@RequestBody GetCustomerByIdV1Request request) {
         return customersService.getCustomerById(request.getCustomerId());
     }
 
-    @GetMapping("getCustomersByAccountNumber/V1")
+    @PostMapping("getCustomersByAccountNumber/V1")
     public GenericReadResponse<List<Customer>> getCustomersByAccountNumberV1(@RequestBody GetCustomersByAccountNumberV1Request request) {
         return customersService.getCustomersByAccountNumber(request.getAccountNumber());
     }
 
-    @GetMapping("getCustomerWithAccountDetail/V1")
+    @PostMapping("getCustomerWithAccountDetail/V1")
     public GenericReadResponse<CustomerWithAccountDetail> getCustomerWithAccountDetailV1(@RequestBody GetCustomerWithAccountDetailV1Request request) {
         return customersService.getCustomerWithAccountDetail(request.getCustomerId());
     }
@@ -63,6 +63,11 @@ public class CustomersController {
     @PutMapping("removeAccountFromAllCustomers/V1")
     public GenericWriteResponse removeAccountFromAllCustomersV1(@RequestBody RemoveAccountFromAllCustomersV1Request request) {
         return customersService.removeAccountFromAllCustomers(request.getAccountNumber());
+    }
+
+    @PostMapping("deleteCustomerById/V1")
+    public GenericWriteResponse deleteCustomerByIdV1(@RequestBody DeleteCustomerByIdV1Request request) {
+        return customersService.deleteCustomerById(request.getCustomerId());
     }
 
     @DeleteMapping("deleteAllCustomers/V1")

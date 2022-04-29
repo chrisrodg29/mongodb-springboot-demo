@@ -26,11 +26,19 @@ public class HealthCheckController {
     @GetMapping("performHealthCheck/V1")
     public HealthCheckResponse performHealthCheckV1() {
         try {
-            healthCheckDao.performHealthCheck();
-            return new HealthCheckResponse("OK");
+            Document response = healthCheckDao.performHealthCheck();
+            return new HealthCheckResponse(
+                    "OK",
+                    HealthCheckDao.HEALTH_CHECK_COMMAND,
+                    response
+            );
         } catch (MongoException e) {
             LOGGER.error("Cannot reach database", e);
-            return new HealthCheckResponse("CRITICAL");
+            return new HealthCheckResponse(
+                    "CRITICAL",
+                    HealthCheckDao.HEALTH_CHECK_COMMAND,
+                    e.getMessage()
+            );
         }
     }
 
